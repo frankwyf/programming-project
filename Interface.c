@@ -1,6 +1,35 @@
+#include"Interface.h"
+#include"User_management.h"
+#include"book_management.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#define CreateNode(p) p=(Book *)malloc(sizeof(Book));
+#define DeleteNode(p) free((void *)p);
+
+
+FILE *file;
+int load_books(FILE *file){
+	if (file==NULL){
+		printf("File cannot open!\n");
+		return -1;
+	}
+	else{
+		Book *h,*p,*last;
+		CreateNode(h);//create the head node
+		last=h;
+		CreateNode(p);
+		char temp[1024];
+        memset(temp, '\0', 1024);
+		while (!feof(file)){
+			
+		}
+		
+		return 0;
+	}	
+}
 static char *user_input(const char *input) {
 
 	printf("%s",input);//print the interface choices 1,2,3...
@@ -25,35 +54,46 @@ static char *user_input(const char *input) {
 
 	return answer;
 }
-void main() {
 
-	int choice = 5; //exit
-
-	do {
-		char * answer = user_input("\nPlease choose an option:\n1) Register an account\n2) Login \n3) Search for books\n4) Display all books\n5) Quit\nOption: ");
-		choice = atoi(answer);
-		free(answer);
-
-		switch (choice) {
-			case 1:
-				printf("ok1");
-				break;
-			case 2:
-				printf("ok2");
-				break;
-			case 3:
-				printf("ok3");
-				break;
-			case 4:
-				printf("ok4");
-				break;
-			case 5:
-				printf("goodbye");
-				break;
-			default:
-				printf("Sorry, that doesn't seem to be an option\n");
-		}
-	} while (choice != 5);
-
-	return;
+int main(int argc, char **argv) {
+	if (argc!=2){
+        printf("Error\nExpected use: books.txt\n"); 
+        exit(-1);
+    }
+	else{
+		file=fopen(argv[1],"r");
+		if (load_books(file)==0){
+		int choice = 5; //exit
+	        do {
+	            char * answer = user_input("\nPlease choose an option:\n1) Register an account\n2) Login \n3) Search for books\n4) Display all books\n5) Quit\nOption: ");
+	            choice = atoi(answer);
+	            free(answer);
+		        switch (choice) {
+		            case 1:
+			            printf("user register");
+			            break;
+			        case 2:
+			            printf("login\n librain\n user\n");
+			            break;
+			        case 3:
+			            printf("search requires login\n search by title, author, year\n");
+			            break;
+			        case 4:
+			            printf("Dispaly");
+			            break;
+		            case 5:
+			            printf("Thank you for using the library!\nGoodbye!");
+			            break;
+		            default:
+			            printf("Sorry, the option you entered was invalid, please try agian\n");
+	            } 
+            } while (choice != 5);
+	    }
+	    else{
+		    printf("Failed to load book data!\nPlease try agian.\n");
+			exit(-1);
+	    }
+	}
+	
+	return 0;
 }
