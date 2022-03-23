@@ -3,6 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-static void user_regist(){//fucntion for user register
+Librarian *admin;
+
+static void setlibrarian(Librarian *admin){//set an account for the librarian 
+    admin->librarian_name="Admin";
+    admin->librarian_password="Admin123";
+}
+
+int user_regist(FILE *userfile){//fucntion for user register
     
 }

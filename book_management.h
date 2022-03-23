@@ -61,4 +61,8 @@ BookList find_book_by_author (const char *author);
 BookList find_book_by_year (unsigned int year);
 
 
+//The below are some of the changes I made to the provided header file
+FILE *file;//global varibale: poniter for the file
+BookList *lpointer;//header node of the  linked list of books
+
 #endif

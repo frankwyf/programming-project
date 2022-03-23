@@ -10,7 +10,17 @@
 #define DeleteNode(p) free((void *)p);
 
 
-FILE *file;
+
+static void print_all_books(BookList *lpointer){
+	while(lpointer->list->next){
+		printf("%i\n",lpointer->list->id);
+		printf("%s\n",lpointer->list->title);
+		printf("%s\n",lpointer->list->authors);
+		printf("%i\n",lpointer->list->next->year);
+		printf("%i\n",lpointer->list->copies);
+	}
+}
+
 int load_books(FILE *file){
 	if (file==NULL){
 		printf("File cannot open!\n");
@@ -18,15 +28,56 @@ int load_books(FILE *file){
 	}
 	else{
 		Book *h,*p,*last;
-		CreateNode(h);//create the head node
+		CreateNode(h);//creat the header node
 		last=h;
-		CreateNode(p);
-		char temp[1024];
-        memset(temp, '\0', 1024);
-		while (!feof(file)){
-			
+		CreateNode(p);//create the first real node
+		char temp[1024];//read in a whole line form the text file
+		memset(temp, '\0', 1024);//initialize the temp string
+		char *frtn=fgets(temp,sizeof(temp),file);
+		int i;
+		for (i=0;i<=1024;i++){
+			if (temp[i]=='\n'){
+				temp[i]='\0';
+			}
+		}//delete the '/n' at the end of the line
+		while (frtn != NULL){//read file till the end (an empty line)
+			char *ptr=strtok(temp,",");//cut the input string by comma
+			int row=0;
+			while (ptr != NULL){
+				switch (row){//copying data into the data part in a node
+					case 0:
+					    p->id=atoi(ptr);
+					    break;
+					case 1:
+					    p->title=ptr;
+					    break;
+					case 2:
+					    p->authors=ptr;
+					    break;
+					case 3:
+					    p->year=atoi(ptr);
+					    break;
+					case 4:
+					    p->copies=atoi(ptr);
+					    break;
+				}
+				row+=1;
+				ptr=strtok(NULL,",");
+			}
+			last->next=p;//make the last pointer poiting at the end of the linked list
+			last=p;//iserting a new node into the linked list
+			//listpointer->length+=1;//increasing the length of the booklist by one 
+		    memset(temp, '\0', 1024);
+            frtn = fgets(temp,sizeof(temp),file);//read in the second line
+		    int j;
+		    for (j=0;j<=1024;j++){
+			    if (temp[j]=='\n'){
+				    temp[j]='\0';
+			    }
+		    }//delete the '/n' at the end of the line
 		}
-		
+		//lpointer->list=h;
+		fclose(file);
 		return 0;
 	}	
 }
@@ -70,7 +121,7 @@ int main(int argc, char **argv) {
 	            free(answer);
 		        switch (choice) {
 		            case 1:
-			            printf("user register");
+			            printf("user regist");
 			            break;
 			        case 2:
 			            printf("login\n librain\n user\n");
@@ -79,7 +130,7 @@ int main(int argc, char **argv) {
 			            printf("search requires login\n search by title, author, year\n");
 			            break;
 			        case 4:
-			            printf("Dispaly");
+			            print_all_books(lpointer);
 			            break;
 		            case 5:
 			            printf("Thank you for using the library!\nGoodbye!");
