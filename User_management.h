@@ -8,15 +8,16 @@ typedef struct _User {//data stucture of registed users
     char *name;//real name
     char *username;//username
     char *password;//password
+    struct _User *next; //pointer to the next user element
 }User;
 
-typedef struct _Librarian {//data structure for librarian
-    char *librarian_name;
-    char *librarian_password;
-}Librarian;
 
 int user_regist(FILE *userfile);//the function for users to register
 
-FILE *userfile;
+FILE *userfile;//file pointer for the user(librarian file)
+User *admin;//craet the librarian account
+
+int set_librarian(User *admin,FILE *userfile);//set the librarian account
+int load_userfile(FILE *userfile);//load the fixed user file
 
 #endif
