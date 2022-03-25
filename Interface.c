@@ -12,26 +12,7 @@
 
 
 
-static void print_all_books(BookList *lpointer){
-	printf("ID");
-	printf("%*s",6," ");
-	printf("Title");
-	printf("%*s",35," ");
-	printf("Author");
-	printf("%*s",18," ");
-	printf("Year");
-	printf("%*s",12," ");
-	printf("Copies\n");
-	Book *print;
-	print=lpointer->list->next;
-	while(print!=NULL){
-			printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",print->id,print->title,print->authors,print->year,print->copies);
-		print=print->next;
-	}
-}
-
-
-static char *user_input(const char *input) {
+char *user_input(const char *input) {
 
 	printf("%s",input);//print the interface choices 1,2,3...
 
@@ -77,16 +58,16 @@ void run_system(){
 			            printf("login\n librain\n user\n");
 			            break;
 			        case 3:
-			            printf("search requires login\n search by title, author, year\n");
+			            search_for_books(lpointer);
 			            break;
 			        case 4:
 			            print_all_books(lpointer);
 			            break;
 		            case 5:
-			            printf("Thank you for using the library!\nGoodbye!");
+			            printf("\nThank you for using the library!\nGoodbye!\n");
 			            break;
 		            default:
-			            printf("Sorry, the option you entered was invalid, please try agian\n");
+			            printf("\nSorry, the option you entered was invalid, please try agian\n");
 	            } 
             } while (choice != 5);
 	    }

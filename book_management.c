@@ -1,15 +1,38 @@
-#include "book_management.h"
+#include"interface.h"
+#include"user_management.h"
+#include"book_management.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 
 #define CreateNode(p) p=(Book *)malloc(sizeof(Book));
 #define Booklist(p) p=(BookList *)malloc(sizeof(BookList));
 #define DeleteNode(p) free((void *)p);
 
+void print_title(){
+	printf("ID");
+	printf("%*s",6," ");
+	printf("Title");
+	printf("%*s",35," ");
+	printf("Author");
+	printf("%*s",18," ");
+	printf("Year");
+	printf("%*s",12," ");
+	printf("Copies\n");//title line are presented as above
+}
 
+void print_all_books(BookList *lpointer){
+	print_title();
+	Book *print;
+	print=lpointer->list->next;
+	while(print!=NULL){
+			printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",print->id,print->title,print->authors,print->year,print->copies);//output formates
+		print=print->next;
+	}
+}
 
 int load_books(FILE *file){
 	if (file==NULL){
@@ -79,6 +102,89 @@ int load_books(FILE *file){
 		fclose(file);
 		return 0;
 	}	
+}
+void search_by_title(BookList *lpointer){
+	printf("\nPlease enter the title: ");
+	char *str=(char *)malloc(sizeof(char)*100);//the maxium length of a book author maybe 200 characters
+	fgets(str,100,stdin);
+	int i=strlen(str);
+	str[i-1]='\0';
+	Book *searhTitle;
+	searhTitle=lpointer->list->next;
+	print_title();
+	while (searhTitle!=NULL){
+		if (strcmp(searhTitle->title,str)==0){
+			printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searhTitle->id,searhTitle->title,searhTitle->authors,searhTitle->year,searhTitle->copies);//output formates
+			break;
+		}
+		else{searhTitle=searhTitle->next;}
+	}
+	
+}
+
+void search_by_author(BookList *lpointer){
+	printf("\nPlease enter the author: ");
+	char *str=(char *)malloc(sizeof(char)*200);//the maxium length of a book title maybe 200 characters
+	fgets(str,200,stdin);
+	int i=strlen(str);
+	str[i-1]='\0';
+	Book *searchAuthor;
+	searchAuthor=lpointer->list->next;
+	print_title();
+	while (searchAuthor!=NULL){
+		if (strcmp(searchAuthor->authors,str)==0){
+			printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searchAuthor->id,searchAuthor->title,searchAuthor->authors,searchAuthor->year,searchAuthor->copies);//output formates
+			break;
+		}
+		else{searchAuthor=searchAuthor->next;}
+	}
+	
+}
+
+void search_by_year(BookList *lpointer){
+	printf("\nPlease enter the year: ");
+	int year;
+	scanf("%i",&year);
+	getchar();
+	Book *searchYear;
+	searchYear=lpointer->list->next;
+	print_title();
+	while (searchYear!=NULL){
+		if (searchYear->year==year){
+			printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searchYear->id,searchYear->title,searchYear->authors,searchYear->year,searchYear->copies);//output formates
+			break;
+		}
+		else{searchYear=searchYear->next;}
+	}
+}
+
+
+
+int search_for_books(BookList *lpointer){
+	printf("\nLoading Search Menu...\n");
+	   int in = 5; //exit
+	        do {
+	        char * answer = user_input("\nPlease choose an option:\n1) Search by title\n2) Search by author \n3) Search by year\n4) Quit\nOption: ");
+	        in = atoi(answer);
+	        free(answer);
+	        switch (in) {
+		        case 1:
+			        search_by_title(lpointer);
+			        break;
+			    case 2:
+			        search_by_author(lpointer);
+			        break;
+			    case 3:
+		            search_by_year(lpointer);
+		            break;
+	            case 4:
+		            printf("\nThank you for using search for books fucntion!\n");
+		            break;
+	            default:
+		            printf("\nSorry, the option you entered was invalid, please try agian\n");
+            } 
+        } while (in != 4);
+	return 0;
 }
 
 int store_books(FILE *file){

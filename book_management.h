@@ -65,4 +65,11 @@ BookList find_book_by_year (unsigned int year);
 FILE *file;//global varibale: poniter for the file
 BookList *lpointer;//header node of the  linked list of books
 
+void print_title();//print the title of booklists
+void print_all_books(BookList *lpointer);//fuction used for print all the books
+int search_for_books(BookList *lpointer);//function used for search for books, return 0 if success and return 1 if the search was failed
+void search_by_title(BookList *lpointer);
+void search_by_author(BookList *lpointer);
+void search_by_year(BookList *lpointer);
+
 #endif

@@ -1,7 +1,7 @@
 
 # code details
 
-EXE = ./code
+EXE = ./code/LibrarySystem
 SRC= Interface.c book_management.c  User_management.c
 
 # generic build details

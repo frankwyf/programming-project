@@ -7,7 +7,7 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "$D:\\programming_project\\CWK1\\code\\*.c",
+                "D:\\programming_project\\CWK1\\code\\*.c",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
