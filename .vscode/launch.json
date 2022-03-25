@@ -8,10 +8,10 @@
             "name": "gcc.exe - 生成和调试活动文件",
             "type": "cppdbg",
             "request": "launch",
-            "program": "D:\\programming project\\CWK1\\code\\Interface.exe",
+            "program": "D:\\programming_project\\CWK1\\code\\Interface.exe",
             "args": ["books.txt"],
             "stopAtEntry": false,
-            "cwd": "D:\\programming project\\CWK1\\code",
+            "cwd": "D:\\programming_project\\CWK1\\code",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -20,11 +20,6 @@
                 {
                     "description": "为 gdb 启用整齐打印",
                     "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                },
-                {
-                    "description": "将反汇编风格设置为 Intel",
-                    "text": "-gdb-set disassembly-flavor intel",
                     "ignoreFailures": true
                 }
             ],

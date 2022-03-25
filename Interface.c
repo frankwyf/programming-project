@@ -13,14 +13,19 @@
 
 
 static void print_all_books(BookList *lpointer){
+	printf("ID");
+	printf("%*s",6," ");
+	printf("Title");
+	printf("%*s",35," ");
+	printf("Author");
+	printf("%*s",18," ");
+	printf("Year");
+	printf("%*s",12," ");
+	printf("Copies\n");
 	Book *print;
 	print=lpointer->list->next;
 	while(print!=NULL){
-		printf("%i\n",print->id);
-		printf("%s\n",print->title);
-		printf("%s\n",print->authors);
-		printf("%i\n",print->year);
-		printf("%i\n",print->copies);
+			printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",print->id,print->title,print->authors,print->year,print->copies);
 		print=print->next;
 	}
 }
@@ -55,9 +60,17 @@ int load_books(FILE *file){
 					    break;
 					case 1:
 					    p->title=ptr;
+						int i;
+						i=strlen(p->title);
+						p->title=(char *)malloc(i*sizeof(char));
+						strcpy(p->title,ptr);
 					    break;
 					case 2:
 					    p->authors=ptr;
+						int j;
+						j=strlen(p->authors);
+						p->authors=(char *)malloc(i*sizeof(char));
+						strcpy(p->authors,ptr);
 					    break;
 					case 3:
 					    p->year=atoi(ptr);
@@ -126,7 +139,7 @@ int main(int argc, char **argv) {
 	            free(answer);
 		        switch (choice) {
 		            case 1:
-			            //user_regist(userfile);
+			            user_regist(userfile);
 			            break;
 			        case 2:
 			            printf("login\n librain\n user\n");
