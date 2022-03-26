@@ -64,6 +64,11 @@ BookList find_book_by_year (unsigned int year);
 //The below are some of the changes I made to the provided header file
 FILE *file;//global varibale: poniter for the file
 BookList *lpointer;//header node of the  linked list of books
+Book Addbook;//the book strcture used for librarian to add a book
+Book Removebook;//the book structure used for librarian to remove a book
+
+
+
 
 void print_title();//print the title of booklists
 void print_all_books(BookList *lpointer);//fuction used for print all the books
@@ -71,5 +76,12 @@ int search_for_books(BookList *lpointer);//function used for search for books, r
 void search_by_title(BookList *lpointer);
 void search_by_author(BookList *lpointer);
 void search_by_year(BookList *lpointer);
+
+
+int borrow_book(BookList *lpointer);//funtion for users to borrow a book
+//returns 0 if the borrow is successful, 1 otherwias
+
+int return_book(BookList *lpointer);//funtion for users to return a book
+//returns 0 if the borrow is successful, 1 otherwias
 
 #endif

@@ -110,7 +110,6 @@ void search_by_title(BookList *lpointer){
 	int i=strlen(str);
 	str[i-1]='\0';//get rid of the '\n' at the last of the input
 	int j;
-	int try=0;//for book not found message
 	for (j=0;j<i-1;j++){
 		if (isdigit(str[j])){
 			printf("\nThis is an invalid book title!\n");
@@ -122,17 +121,23 @@ void search_by_title(BookList *lpointer){
     searhTitle=lpointer->list->next;
 	printf("\n");
     print_title();
-    while (searhTitle!=NULL){
-	    if (strcmp(searhTitle->title,str)==0){
-	        printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searhTitle->id,searhTitle->title,searhTitle->authors,searhTitle->year,searhTitle->copies);//output formates
-	        break;
-	    }
-	    else{
-			searhTitle=searhTitle->next;
-			try+=1;
-		}
-    }
-	if(try==lpointer->length){
+	int try=0;//for loop around the whole list
+	int flag=0;//to decide whether there's an out put or not
+	while (try<lpointer->length){
+        while (searhTitle!=NULL){
+	        if (strcmp(searhTitle->title,str)==0){
+	            printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searhTitle->id,searhTitle->title,searhTitle->authors,searhTitle->year,searhTitle->copies);//output formates
+	            searhTitle=searhTitle->next;
+				flag=1;
+				try+=1;
+	        }
+	        else{
+			    searhTitle=searhTitle->next;
+			    try+=1;
+		    }
+        }
+	}
+	if(try==lpointer->length && flag==0){
 		printf("\nSorry! There's no such book you want.\n");
 	}
 	free(str);
@@ -145,7 +150,6 @@ void search_by_author(BookList *lpointer){
 	int i=strlen(str);
 	str[i-1]='\0';//get rid of the '\n' at the last of the input
 	int j;
-	int try=0;//for book not found message
 	for (j=0;j<i-1;j++){
 		if (isdigit(str[j])){
 			printf("\nThis is an invalid auathor name!\n");
@@ -157,17 +161,23 @@ void search_by_author(BookList *lpointer){
 	searchAuthor=lpointer->list->next;
 	printf("\n");
 	print_title();
-	while (searchAuthor!=NULL){
-		if (strcmp(searchAuthor->authors,str)==0){
-		    printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searchAuthor->id,searchAuthor->title,searchAuthor->authors,searchAuthor->year,searchAuthor->copies);//output formates
-		    break;
+	int try=0;//for loop around the whole list
+	int flag=0;//to decide whether there's an out put or not
+	while (try<lpointer->length){
+	    while (searchAuthor!=NULL){
+		    if (strcmp(searchAuthor->authors,str)==0){
+		        printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searchAuthor->id,searchAuthor->title,searchAuthor->authors,searchAuthor->year,searchAuthor->copies);//output formates
+		        searchAuthor=searchAuthor->next;
+				flag=1;
+				try+=1;
+	        }
+	        else{
+			    searchAuthor=searchAuthor->next;
+			    try+=1;
+		    }
 	    }
-	    else{
-			searchAuthor=searchAuthor->next;
-			try+=1;
-		}
 	}
-	if(try==lpointer->length){
+	if(try==lpointer->length && flag==0){
 	    printf("\nSorry! There's no such author in the library.\n");
     }
 	free(str);
@@ -180,7 +190,6 @@ void search_by_year(BookList *lpointer){
 	int i=strlen(str);
 	str[i-1]='\0';//get rid of the '\n' at the last of the input
 	int j;
-	int try=0;//for book not found message
 	for (j=0;j<i-1;j++){
 		if (!isdigit(str[j])){
 			printf("\nThis is an invalid year!\n");
@@ -197,17 +206,23 @@ void search_by_year(BookList *lpointer){
 	Book *searchYear;
 	searchYear=lpointer->list->next;
 	print_title();
-	while (searchYear!=NULL){
-		if (searchYear->year==year){
-			printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searchYear->id,searchYear->title,searchYear->authors,searchYear->year,searchYear->copies);//output formates
-			break;
-		}
-		else{
-			searchYear=searchYear->next;
-			try+=1;
-		}
+	int flag=0;//to decide whether there's an out put or not
+	int try=0;//for loop around the whole list
+	while (try<lpointer->length){
+		while (searchYear!=NULL){
+		    if (searchYear->year==year){
+			    printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searchYear->id,searchYear->title,searchYear->authors,searchYear->year,searchYear->copies);//output formates
+			    searchYear=searchYear->next;
+				flag=1;
+				try+=1;
+		    }
+		    else{
+			    searchYear=searchYear->next;
+			    try+=1;
+		    }
+	    }
 	}
-	if(try==lpointer->length){
+	if(try==lpointer->length && flag==0){
 	    printf("\nSorry! There's no book released in that year in the library.\n");
     }
 	free(str);

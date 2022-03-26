@@ -52,10 +52,10 @@ void run_system(){
 	            free(answer);
 		        switch (choice) {
 		            case 1:
-			            user_regist(userfile);
+			            printf("register");
 			            break;
 			        case 2:
-			            user_login(userfile);
+			            login(userfile);
 			            break;
 			        case 3:
 			            search_for_books(lpointer);
