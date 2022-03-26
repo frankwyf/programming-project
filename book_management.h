@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 
+
 /*You can extend the structs (Book and BookList) defined in this head file;
   However, you may not change the function prototypes. 
   You are also free to add additional head files and data structures as needed. 
@@ -66,22 +67,18 @@ FILE *file;//global varibale: poniter for the file
 BookList *lpointer;//header node of the  linked list of books
 Book Addbook;//the book strcture used for librarian to add a book
 Book Removebook;//the book structure used for librarian to remove a book
-
+const char *title;//search by title
+const char *author;//search by author
+unsigned int year;//search by year
 
 
 
 void print_title();//print the title of booklists
 void print_all_books(BookList *lpointer);//fuction used for print all the books
 int search_for_books(BookList *lpointer);//function used for search for books, return 0 if success and return 1 if the search was failed
-void search_by_title(BookList *lpointer);
-void search_by_author(BookList *lpointer);
-void search_by_year(BookList *lpointer);
 
 
-int borrow_book(BookList *lpointer);//funtion for users to borrow a book
-//returns 0 if the borrow is successful, 1 otherwias
 
-int return_book(BookList *lpointer);//funtion for users to return a book
-//returns 0 if the borrow is successful, 1 otherwias
+
 
 #endif

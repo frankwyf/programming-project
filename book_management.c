@@ -12,6 +12,7 @@
 #define Booklist(p) p=(BookList *)malloc(sizeof(BookList));
 #define DeleteNode(p) free((void *)p);
 
+
 void print_title(){
 	printf("ID");
 	printf("%*s",6," ");
@@ -103,129 +104,155 @@ int load_books(FILE *file){
 		return 0;
 	}	
 }
-void search_by_title(BookList *lpointer){
+BookList find_book_by_title (const char *title){
+	BookList *find_book_by_title;
+	Booklist(find_book_by_title);
+	CreateNode(find_book_by_title->list);
+	find_book_by_title->length=0;//initilaize
 	printf("\nPlease enter the title: ");
 	char *str=(char *)malloc(sizeof(char)*100);//the maxium length of a book author maybe 200 characters
 	fgets(str,100,stdin);
 	int i=strlen(str);
 	str[i-1]='\0';//get rid of the '\n' at the last of the input
+	title=str;
 	int j;
 	for (j=0;j<i-1;j++){
 		if (isdigit(str[j])){
 			printf("\nThis is an invalid book title!\n");
-			return;
+			find_book_by_title->list=NULL;
+			return *find_book_by_title;
 		}
 		else{continue;}
 	}
-	Book *searhTitle;
-    searhTitle=lpointer->list->next;
+    find_book_by_title->list=lpointer->list->next;
 	printf("\n");
     print_title();
 	int try=0;//for loop around the whole list
 	int flag=0;//to decide whether there's an out put or not
 	while (try<lpointer->length){
-        while (searhTitle!=NULL){
-	        if (strcmp(searhTitle->title,str)==0){
-	            printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searhTitle->id,searhTitle->title,searhTitle->authors,searhTitle->year,searhTitle->copies);//output formates
-	            searhTitle=searhTitle->next;
+        while (find_book_by_title->list!=NULL){
+	        if (strcmp(find_book_by_title->list->title,str)==0){
+	            printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",find_book_by_title->list->id,find_book_by_title->list->title,find_book_by_title->list->authors,find_book_by_title->list->year,find_book_by_title->list->copies);//output formates
+				find_book_by_title->length+=1;
+	            find_book_by_title->list=find_book_by_title->list->next;
 				flag=1;
 				try+=1;
 	        }
 	        else{
-			    searhTitle=searhTitle->next;
+			    find_book_by_title->list=find_book_by_title->list->next;
 			    try+=1;
 		    }
         }
 	}
 	if(try==lpointer->length && flag==0){
 		printf("\nSorry! There's no such book you want.\n");
+		find_book_by_title->list=NULL;
+		return *find_book_by_title;
 	}
 	free(str);
+	return *find_book_by_title;
 }
 
-void search_by_author(BookList *lpointer){
+BookList find_book_by_author (const char *author){
+	BookList *find_book_by_author;
+	Booklist(find_book_by_author);
 	printf("\nPlease enter the author: ");
 	char *str=(char *)malloc(sizeof(char)*200);//the maxium length of a book title maybe 200 characters
 	fgets(str,200,stdin);
 	int i=strlen(str);
 	str[i-1]='\0';//get rid of the '\n' at the last of the input
+	author=str;//give in the attributes
 	int j;
 	for (j=0;j<i-1;j++){
 		if (isdigit(str[j])){
 			printf("\nThis is an invalid auathor name!\n");
-			return;
+			find_book_by_author->list=NULL;
+			return *find_book_by_author;
 		}
 		else{continue;}
 	}
-	Book *searchAuthor;
-	searchAuthor=lpointer->list->next;
+	CreateNode(find_book_by_author->list);
+	find_book_by_author->length=0;//initilaize
+	find_book_by_author->list=lpointer->list->next;
 	printf("\n");
 	print_title();
 	int try=0;//for loop around the whole list
 	int flag=0;//to decide whether there's an out put or not
 	while (try<lpointer->length){
-	    while (searchAuthor!=NULL){
-		    if (strcmp(searchAuthor->authors,str)==0){
-		        printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searchAuthor->id,searchAuthor->title,searchAuthor->authors,searchAuthor->year,searchAuthor->copies);//output formates
-		        searchAuthor=searchAuthor->next;
+	    while (find_book_by_author->list!=NULL){
+		    if (strcmp(find_book_by_author->list->authors,str)==0){
+		        printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",find_book_by_author->list->id,find_book_by_author->list->title,find_book_by_author->list->authors,find_book_by_author->list->year,find_book_by_author->list->copies);//output formates
+		        find_book_by_author->list=find_book_by_author->list->next;
+				find_book_by_author->length+=1;
 				flag=1;
 				try+=1;
 	        }
 	        else{
-			    searchAuthor=searchAuthor->next;
+			    find_book_by_author->list=find_book_by_author->list->next;
 			    try+=1;
 		    }
 	    }
 	}
 	if(try==lpointer->length && flag==0){
 	    printf("\nSorry! There's no such author in the library.\n");
+		find_book_by_author->list=NULL;
+		return *find_book_by_author;
     }
 	free(str);
+	return *find_book_by_author;
 }
 
-void search_by_year(BookList *lpointer){
+BookList find_book_by_year (unsigned int year){
+	BookList *find_book_by_year;
+	Booklist(find_book_by_year);
 	printf("\nPlease enter the year: ");
 	char *str=(char *)malloc(sizeof(int)*4+sizeof(char));//the maxium length of a year is 4 digit + one for the '\n'
 	fgets(str,18,stdin);
 	int i=strlen(str);
 	str[i-1]='\0';//get rid of the '\n' at the last of the input
+	year=(int)atoi(str);//give the attributes
 	int j;
 	for (j=0;j<i-1;j++){
 		if (!isdigit(str[j])){
 			printf("\nThis is an invalid year!\n");
-			return;
+			find_book_by_year->list=NULL;
+			return *find_book_by_year;
 		}
 		else{continue;}
 	}
-	int year;
-	year=(int)atoi(str);
 	if (year>2022){
 		printf("\nThis year is 2022! No futher year is possible!\n");
-		return;
+		find_book_by_year->list=NULL;
+		return *find_book_by_year;
 	}
-	Book *searchYear;
-	searchYear=lpointer->list->next;
+	CreateNode(find_book_by_year->list);
+	find_book_by_year->length=0;//initilaize
+	find_book_by_year->list=lpointer->list->next;
 	print_title();
 	int flag=0;//to decide whether there's an out put or not
 	int try=0;//for loop around the whole list
 	while (try<lpointer->length){
-		while (searchYear!=NULL){
-		    if (searchYear->year==year){
-			    printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searchYear->id,searchYear->title,searchYear->authors,searchYear->year,searchYear->copies);//output formates
-			    searchYear=searchYear->next;
+		while (find_book_by_year->list!=NULL){
+		    if (find_book_by_year->list->year==year){
+			    printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",find_book_by_year->list->id,find_book_by_year->list->title,find_book_by_year->list->authors,find_book_by_year->list->year,find_book_by_year->list->copies);//output formates
+			    find_book_by_year->list=find_book_by_year->list->next;
+				find_book_by_year->length+=1;
 				flag=1;
 				try+=1;
 		    }
 		    else{
-			    searchYear=searchYear->next;
+			    find_book_by_year->list=find_book_by_year->list->next;
 			    try+=1;
 		    }
 	    }
 	}
 	if(try==lpointer->length && flag==0){
 	    printf("\nSorry! There's no book released in that year in the library.\n");
+		find_book_by_year->list=NULL;
+		return *find_book_by_year;
     }
 	free(str);
+	return *find_book_by_year;
 }
 
 
@@ -239,13 +266,13 @@ int search_for_books(BookList *lpointer){
 	        free(answer);
 	        switch (in) {
 		        case 1:
-			        search_by_title(lpointer);
+			        find_book_by_title(title);
 			        break;
 			    case 2:
-			        search_by_author(lpointer);
+			        find_book_by_author(author);
 			        break;
 			    case 3:
-		            search_by_year(lpointer);
+		            find_book_by_year(year);
 		            break;
 	            case 4:
 		            printf("\nThank you for using search for books fucntion!\n");

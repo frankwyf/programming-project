@@ -86,7 +86,18 @@ int load_users(FILE *userfile){
 	}
 }
 
+//funtion used for users to borrow a book
+int borrow_book(User *borrowuser){
+	printf("Enter the ID of the book you wish to borrow: ");
+	int borrow_id;
+	scanf("%i",&borrow_id);
+	getchar();
+	//borrow
+	
 
+	printf("\nYou have successfuly borrowed this book!\n");
+	printf("\nSorry, you already have a copy of this book on loan!\n");
+}
 
 //fucntion for user register
 int user_regist(FILE *userfile){
@@ -112,9 +123,12 @@ void login(FILE *userfile){
 
         User *LoginCheck;
         LoginCheck=admin->UserList->next;
+		int success=0;//determin whether a user has successfully logged in or not
         while (LoginCheck!=NULL){
-            if (strcmp(LoginCheck->username,username) && strcmp(LoginCheck->password,password) && LoginCheck->id!=1){//the first is the librarian
-                //interface for normal user
+            if (strcmp(LoginCheck->username,username)==0 && strcmp(LoginCheck->password,password)==0 && LoginCheck->id!=1){//the first is the librarian
+			    success=1;
+                printf("(\nSuccessfully logged in as: %s\n)",LoginCheck->username);
+				//interface for normal user
                 int choice = 5; //exit
 	            do {
 	                char * answer = user_input("\nPlease choose an option:\n1) Borrow book \n2) Return book \n3) Search for books\n4) Display all books\n5) Quit\nOption: ");
@@ -122,8 +136,7 @@ void login(FILE *userfile){
 	                free(answer);
 		            switch (choice) {
 		                case 1:
-                            printf("1");
-			                //borrow_book(lpointer);
+			                borrow_book(LoginCheck);
 			                break;
 			            case 2:
                             printf("2");
@@ -143,8 +156,10 @@ void login(FILE *userfile){
 	                } 
                 } while (choice != 5);
             }
-		    if (strcmp(LoginCheck->username,username) && strcmp(LoginCheck->password,password) && LoginCheck->id==1){//librarian log in
-			    //interface for librarian usage
+		    if (strcmp(LoginCheck->username,username)==0 && strcmp(LoginCheck->password,password)==0 && LoginCheck->id==1){//librarian log in
+			    success=1;
+				printf("(\nSuccessfully logged in as Librarian: %s\n)",LoginCheck->username);
+				//interface for librarian usage
                 int lchoice = 5; //exit
 	            do {
 	                char * answer = user_input("\nPlease choose an option:\n1) Add book \n2) Remove book \n3) Search for books\n4) Display all books\n5) Quit\nOption: ");
@@ -167,7 +182,7 @@ void login(FILE *userfile){
 			                break;
 		                case 5:
 			                printf("\nThank you for managing the library!\n Loging you out...\n\n");
-			                break;
+			                return;
 		                default:
 			                printf("\nSorry, the option you entered was invalid, please try agian.\n");
 	                } 
@@ -177,6 +192,10 @@ void login(FILE *userfile){
 			    LoginCheck=LoginCheck->next;
 		    }
         }
+		if (success==0){
+			printf("\nSorry, your username or password is invalid, please try again!\n");
+			return;
+		}
     }
     else{
         printf("\nFailed to laod users.\n EXITING...");

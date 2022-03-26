@@ -29,4 +29,10 @@ int set_librarian(User *admin,FILE *userfile);//set the librarian account
 int load_userfile(FILE *userfile);//load the fixed user file
 void login(FILE *userfile);//the login function
 
+
+int borrow_book(User *borrowuser);//funtion for users to borrow a book
+//returns 0 if the borrow is successful, 1 otherwias
+
+int return_book(User *returnuser);//funtion for users to return a book
+//returns 0 if the borrow is successful, 1 otherwias
 #endif
