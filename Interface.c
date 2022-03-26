@@ -55,7 +55,7 @@ void run_system(){
 			            user_regist(userfile);
 			            break;
 			        case 2:
-			            printf("login\n librain\n user\n");
+			            user_login(userfile);
 			            break;
 			        case 3:
 			            search_for_books(lpointer);
@@ -64,10 +64,10 @@ void run_system(){
 			            print_all_books(lpointer);
 			            break;
 		            case 5:
-			            printf("\nThank you for using the library!\nGoodbye!\n");
+			            printf("\nThank you for using the library!\nGoodbye!\n\n");
 			            break;
 		            default:
-			            printf("\nSorry, the option you entered was invalid, please try agian\n");
+			            printf("\nSorry, the option you entered was invalid, please try agian.\n");
 	            } 
             } while (choice != 5);
 	    }

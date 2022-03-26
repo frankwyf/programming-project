@@ -108,18 +108,34 @@ void search_by_title(BookList *lpointer){
 	char *str=(char *)malloc(sizeof(char)*100);//the maxium length of a book author maybe 200 characters
 	fgets(str,100,stdin);
 	int i=strlen(str);
-	str[i-1]='\0';
-	Book *searhTitle;
-	searhTitle=lpointer->list->next;
-	print_title();
-	while (searhTitle!=NULL){
-		if (strcmp(searhTitle->title,str)==0){
-			printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searhTitle->id,searhTitle->title,searhTitle->authors,searhTitle->year,searhTitle->copies);//output formates
-			break;
+	str[i-1]='\0';//get rid of the '\n' at the last of the input
+	int j;
+	int try=0;//for book not found message
+	for (j=0;j<i-1;j++){
+		if (isdigit(str[j])){
+			printf("\nThis is an invalid book title!\n");
+			return;
 		}
-		else{searhTitle=searhTitle->next;}
+		else{continue;}
 	}
-	
+	Book *searhTitle;
+    searhTitle=lpointer->list->next;
+	printf("\n");
+    print_title();
+    while (searhTitle!=NULL){
+	    if (strcmp(searhTitle->title,str)==0){
+	        printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searhTitle->id,searhTitle->title,searhTitle->authors,searhTitle->year,searhTitle->copies);//output formates
+	        break;
+	    }
+	    else{
+			searhTitle=searhTitle->next;
+			try+=1;
+		}
+    }
+	if(try==lpointer->length){
+		printf("\nSorry! There's no such book you want.\n");
+	}
+	free(str);
 }
 
 void search_by_author(BookList *lpointer){
@@ -127,25 +143,57 @@ void search_by_author(BookList *lpointer){
 	char *str=(char *)malloc(sizeof(char)*200);//the maxium length of a book title maybe 200 characters
 	fgets(str,200,stdin);
 	int i=strlen(str);
-	str[i-1]='\0';
+	str[i-1]='\0';//get rid of the '\n' at the last of the input
+	int j;
+	int try=0;//for book not found message
+	for (j=0;j<i-1;j++){
+		if (isdigit(str[j])){
+			printf("\nThis is an invalid auathor name!\n");
+			return;
+		}
+		else{continue;}
+	}
 	Book *searchAuthor;
 	searchAuthor=lpointer->list->next;
+	printf("\n");
 	print_title();
 	while (searchAuthor!=NULL){
 		if (strcmp(searchAuthor->authors,str)==0){
-			printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searchAuthor->id,searchAuthor->title,searchAuthor->authors,searchAuthor->year,searchAuthor->copies);//output formates
-			break;
+		    printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searchAuthor->id,searchAuthor->title,searchAuthor->authors,searchAuthor->year,searchAuthor->copies);//output formates
+		    break;
+	    }
+	    else{
+			searchAuthor=searchAuthor->next;
+			try+=1;
 		}
-		else{searchAuthor=searchAuthor->next;}
 	}
-	
+	if(try==lpointer->length){
+	    printf("\nSorry! There's no such author in the library.\n");
+    }
+	free(str);
 }
 
 void search_by_year(BookList *lpointer){
 	printf("\nPlease enter the year: ");
+	char *str=(char *)malloc(sizeof(int)*4+sizeof(char));//the maxium length of a year is 4 digit + one for the '\n'
+	fgets(str,18,stdin);
+	int i=strlen(str);
+	str[i-1]='\0';//get rid of the '\n' at the last of the input
+	int j;
+	int try=0;//for book not found message
+	for (j=0;j<i-1;j++){
+		if (!isdigit(str[j])){
+			printf("\nThis is an invalid year!\n");
+			return;
+		}
+		else{continue;}
+	}
 	int year;
-	scanf("%i",&year);
-	getchar();
+	year=(int)atoi(str);
+	if (year>2022){
+		printf("\nThis year is 2022! No futher year is possible!\n");
+		return;
+	}
 	Book *searchYear;
 	searchYear=lpointer->list->next;
 	print_title();
@@ -154,8 +202,15 @@ void search_by_year(BookList *lpointer){
 			printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",searchYear->id,searchYear->title,searchYear->authors,searchYear->year,searchYear->copies);//output formates
 			break;
 		}
-		else{searchYear=searchYear->next;}
+		else{
+			searchYear=searchYear->next;
+			try+=1;
+		}
 	}
+	if(try==lpointer->length){
+	    printf("\nSorry! There's no book released in that year in the library.\n");
+    }
+	free(str);
 }
 
 

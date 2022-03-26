@@ -71,3 +71,7 @@ int user_regist(FILE *userfile){
     printf("Please enter your name:");
     return 0;
 }
+
+void user_login(FILE *userfile){
+
+}
