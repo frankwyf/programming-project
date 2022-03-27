@@ -210,7 +210,6 @@ BookList find_book_by_year (unsigned int year){
 	fgets(str,18,stdin);
 	int i=strlen(str);
 	str[i-1]='\0';//get rid of the '\n' at the last of the input
-	year=(int)atoi(str);//give the attributes
 	int j;
 	for (j=0;j<i-1;j++){
 		if (!isdigit(str[j])){
@@ -220,6 +219,7 @@ BookList find_book_by_year (unsigned int year){
 		}
 		else{continue;}
 	}
+	year=(int)atoi(str);//give the attributes
 	if (year>2022){
 		printf("\nThis year is 2022! No futher year is possible!\n");
 		find_book_by_year->list=NULL;
@@ -261,7 +261,7 @@ int search_for_books(BookList *lpointer){
 	printf("\nLoading Search Menu...\n");
 	   int in = 5; //exit
 	        do {
-	        char * answer = user_input("\nPlease choose an option:\n1) Search by title\n2) Search by author \n3) Search by year\n4) Quit\nOption: ");
+	        char * answer = user_input("\nPlease choose an option:\n1) Search by title\n2) Search by author \n3) Search by year\n4) Return to previous menu\nOption: ");
 	        in = atoi(answer);
 	        free(answer);
 	        switch (in) {

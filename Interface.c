@@ -52,7 +52,7 @@ void run_system(){
 	            free(answer);
 		        switch (choice) {
 		            case 1:
-			            printf("register");
+			            user_regist(userfile);
 			            break;
 			        case 2:
 			            login(userfile);
