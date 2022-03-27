@@ -11,7 +11,7 @@
 #define Booklist(p) p=(BookList *)malloc(sizeof(BookList));
 #define Createuser(p) p=(User *)malloc(sizeof(User));
 #define Createlibrarian(p) p=(Librarian *)malloc(sizeof(Librarian));
-
+#define Showlist(p) p=(ShowList *)malloc(sizeof(ShowList));
 
 
 //load the users into the linked list
@@ -89,7 +89,7 @@ int load_users(FILE *userfile){
 	}
 }
 //function to load the loan file
-int load_loan(FILE *file, BookList *show){
+int load_loan(FILE *userfile, ShowList *show,User *LoginCheck){
 	loan=fopen("loan.txt","r");
 	if (loan==NULL){
 		printf("Loan file cannot open!\n");
@@ -97,9 +97,9 @@ int load_loan(FILE *file, BookList *show){
 	}
 	else{
 		Book *p,*last;
-		Booklist(show);//creat the header node
-		CreateNode(show->list);
-		last=show->list;
+		Showlist(show);//creat the header node
+		CreateNode(show->loan);
+		last=show->loan;
 		char try[1024];//read in a whole line form the text file
 		memset(try, '\0', 1024);//initialize the temp string
 		char *f=fgets(try,sizeof(try),loan);
@@ -112,41 +112,48 @@ int load_loan(FILE *file, BookList *show){
 		while (f != NULL){//read file till the end (an empty line)
 		    CreateNode(p);//create the first real node
 			char *t=strtok(try,",");//cut the input string by comma
-			int row=0;
-			while (t != NULL){
-				switch (row){//copying data into the data part in a node
-					case 0:
-					    break;
-					case 1:
-					    p->id=atoi(t);
-					    break;
-					case 2:
-					    p->title=t;
-						int i;
-						i=strlen(p->title);
-						p->title=(char *)malloc(i*sizeof(char));
-						strcpy(p->title,t);
-					    break;
-					case 3:
-					    p->authors=t;
-						int j;
-						j=strlen(p->authors);
-						p->authors=(char *)malloc(i*sizeof(char));
-						strcpy(p->authors,t);
-					    break;
-					case 4:
-					    p->year=atoi(t);
-					    break;
-					case 5:
-					    p->copies=atoi(t);
-					    break;
-				}
-				row+=1;
-				t=strtok(NULL,",");
+
+			//only get the loan of the user who is currently logged in
+			if (atoi(t)==LoginCheck->id){
+				show->userid=LoginCheck->id;//copying the user id to show data structure
+				t=strtok(try,",");//read in real data
+				int row=0;
+			    while (t != NULL){
+				    switch (row){//copying data into the data part in a node
+					    case 0:
+					        p->id=atoi(t);
+					        break;
+					    case 1:
+					        p->title=t;
+						    int i;
+						    i=strlen(p->title);
+						    p->title=(char *)malloc(i*sizeof(char));
+						    strcpy(p->title,t);
+					        break;
+					    case 2:
+					        p->authors=t;
+						    int j;
+						    j=strlen(p->authors);
+						    p->authors=(char *)malloc(i*sizeof(char));
+						    strcpy(p->authors,t);
+					        break;
+					    case 3:
+					        p->year=atoi(t);
+					        break;
+					    case 4:
+					        p->copies=atoi(t);
+					        break;
+				    }
+				    row+=1;
+				    t=strtok(NULL,",");
+			    }
+			    p->next=NULL;
+			    last->next=p;
+			    last=p;//iserting a new node into the linked list
 			}
-			p->next=NULL;
-			last->next=p;
-			last=p;//iserting a new node into the linked list
+			else{
+
+			}
 		    memset(try, '\0', 1024);
             f = fgets(try,sizeof(try),loan);//read in the second line
 		    int j;
@@ -156,7 +163,6 @@ int load_loan(FILE *file, BookList *show){
 			    }
 		    }//delete the '/n' at the end of the line
 		}
-		show->length=last->id;//the length of the booklist
 		fclose(loan);
 		return 0;
 	}	
@@ -218,11 +224,11 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 }
 
 int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
-		load_loan(loan,show);
+		load_loan(loan,show,LoginCheck);
 		printf("\nBelow is the list of books you aer currently borrowing:\n");
 		print_title();
 		Book *print;
-	    print=show->list->next;
+	    print=show->loan->next;
 	    while(print!=NULL){
 			printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",print->id,print->title,print->authors,print->year,print->copies);//output formates
 		    print=print->next;
@@ -242,6 +248,98 @@ int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
 	    }
 	    int return_id=(int)atoi(str);//read in the ID for borrow operations
 
+}
+
+//function for librarian to add a book to the book list
+int add_book(Book book){
+	//store the title
+	printf("\nEnter the title of the book you want to add: ");
+	char *add_title=(char *)malloc(sizeof(char)*200);//the maxium length of a book title maybe 200 characters
+	fgets(add_title,200,stdin);
+	int i=strlen(add_title);
+	add_title[i-1]='\0';//get rid of the '\n' at the last of the input
+	int j;
+	for (j=0;j<i-1;j++){
+		if (isdigit(add_title[j])){
+			printf("\nThis is an invalid book title!\n");
+			return 1;
+		}
+		else{continue;}
+	}
+	book.title=add_title;
+
+	//store the author
+	printf("Enter the author of the book you want to add: ");
+	char *add_author=(char *)malloc(sizeof(char)*100);//the maxium length of a book author maybe 100 characters
+	fgets(add_author,100,stdin);
+	int x=strlen(add_author);
+	add_author[x-1]='\0';//get rid of the '\n' at the last of the input
+	int y;
+	for (y=0;y<x-1;y++){
+		if (isdigit(add_author[j])){
+			printf("\nThis is an invalid book title!\n");
+			return 1;
+		}
+		else{continue;}
+	}
+	book.authors=add_author;
+
+	//store the year
+	printf("Enter the year of the book you want to add: ");
+	char *add_year=(char *)malloc(sizeof(int)*4+sizeof(char));//the maxium length of a year is 4 digit + one for the '\n'
+	fgets(add_year,18,stdin);
+	int m=strlen(add_year);
+	add_year[m-1]='\0';//get rid of the '\n' at the last of the input
+	int n;
+	for (n=0;n<m-1;n++){
+		if (!isdigit(add_year[n])){
+			printf("\nThis is an invalid year!\n");
+			return 1;
+		}
+		else{continue;}
+	}
+	int addyear=atoi(add_year);
+	book.year=addyear;
+
+	//add the copies of the book
+	printf("Enter the copies of the book you want to add: ");
+	char *add_copies=(char *)malloc(sizeof(int)*4+sizeof(char));//the maxium length of a year is 4 digit + one for the '\n'
+	fgets(add_copies,18,stdin);
+	int a=strlen(add_copies);
+	add_copies[a-1]='\0';//get rid of the '\n' at the last of the input
+	int b;
+	for (b=0;b<a-1;b++){
+		if (!isdigit(add_copies[b])){
+			printf("\nThis is an invalid year!\n");
+			return 1;
+		}
+		else{continue;}
+	}
+	int addcopy=atoi(add_copies);
+	book.copies=addcopy;
+
+	//book id is the last one
+	book.id=lpointer->length+1;
+
+	//create a node to store the value 
+	Book *add,*temp;
+	CreateNode(add);
+	//copy new book data
+	add->id=book.id;
+	add->authors=book.authors;
+	add->title=book.title;
+	add->year=book.year;
+	add->copies=book.copies;
+	//add to the book list (at last)
+	temp=lpointer->list;
+	while (temp->next!=NULL){
+		temp=temp->next;
+	}
+	temp->next=add;
+	add->next=NULL;
+	lpointer->length+=1;
+	printf("\nThe book %s is successfuly added to the library!\n",book.title);
+	return 0;
 }
 
 //fucntion for user register
@@ -360,8 +458,7 @@ void login(FILE *userfile){
 	                free(answer);
 		            switch (lchoice) {
 		                case 1:
-						    printf("l1");
-			                //add_book(Addbook);
+			                add_book(Addbook);
 			                break;
 			            case 2:
 						    printf("l2");

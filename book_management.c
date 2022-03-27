@@ -111,8 +111,8 @@ BookList find_book_by_title (const char *title){
 	CreateNode(find_book_by_title->list);
 	find_book_by_title->length=0;//initilaize
 	printf("\nPlease enter the title: ");
-	char *str=(char *)malloc(sizeof(char)*100);//the maxium length of a book author maybe 200 characters
-	fgets(str,100,stdin);
+	char *str=(char *)malloc(sizeof(char)*200);//the maxium length of a book author maybe 200 characters
+	fgets(str,200,stdin);
 	int i=strlen(str);
 	str[i-1]='\0';//get rid of the '\n' at the last of the input
 	title=str;
@@ -158,8 +158,8 @@ BookList find_book_by_author (const char *author){
 	BookList *find_book_by_author;
 	Booklist(find_book_by_author);
 	printf("\nPlease enter the author: ");
-	char *str=(char *)malloc(sizeof(char)*200);//the maxium length of a book title maybe 200 characters
-	fgets(str,200,stdin);
+	char *str=(char *)malloc(sizeof(char)*100);//the maxium length of a book title maybe 200 characters
+	fgets(str,100,stdin);
 	int i=strlen(str);
 	str[i-1]='\0';//get rid of the '\n' at the last of the input
 	author=str;//give in the attributes
