@@ -38,4 +38,5 @@ int return_book(User *returnuser,FILE *loan);//funtion for users to return a boo
 //returns 0 if the borrow is successful, 1 otherwias
 
 FILE *loan;//the file used to record user loans
+BookList *show;//the booklist struct used to show the user all the loan books he/she has
 #endif

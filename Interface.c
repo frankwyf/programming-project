@@ -38,42 +38,40 @@ char *user_input(const char *input) {
 }
 
 void run_system(){
-	file=fopen("books.txt","r");
-	if (file==NULL){
-        printf("Error1\nPlease contact the librarian for help\n"); 
-        exit(-1);
-    }
+	if (load_books(file)==0){
+	int choice = 5; //exit
+	    do {
+	        char * answer = user_input("\nPlease choose an option:\n1) Register an account\n2) Login \n3) Search for books\n4) Display all books\n5) Quit\nOption: ");
+	        choice = atoi(answer);
+	        free(answer);
+		    switch (choice) {
+		        case 1:
+			        user_regist(userfile);
+			        break;
+			    case 2:
+			        login(userfile);
+			        break;
+			    case 3:
+			        search_for_books(lpointer);
+			        break;
+			    case 4:
+			        print_all_books(lpointer);
+			        break;
+		        case 5:
+				    if (store_books(file)==0){
+						printf("\nThank you for using the library!\nGoodbye!\n\n");
+			            break;
+					}
+					else{
+						break;
+					}
+		        default:
+			        printf("\nSorry, the option you entered was invalid, please try agian.\n");
+	        } 
+        } while (choice != 5);
+	}
 	else{
-		if (load_books(file)==0){
-		int choice = 5; //exit
-	        do {
-	            char * answer = user_input("\nPlease choose an option:\n1) Register an account\n2) Login \n3) Search for books\n4) Display all books\n5) Quit\nOption: ");
-	            choice = atoi(answer);
-	            free(answer);
-		        switch (choice) {
-		            case 1:
-			            user_regist(userfile);
-			            break;
-			        case 2:
-			            login(userfile);
-			            break;
-			        case 3:
-			            search_for_books(lpointer);
-			            break;
-			        case 4:
-			            print_all_books(lpointer);
-			            break;
-		            case 5:
-			            printf("\nThank you for using the library!\nGoodbye!\n\n");
-			            break;
-		            default:
-			            printf("\nSorry, the option you entered was invalid, please try agian.\n");
-	            } 
-            } while (choice != 5);
-	    }
-	    else{
-		    printf("Failed to load book data!\nPlease try agian.\n");
-			exit(-1);
-	    }
+		printf("Failed to load book data!\nPlease try agian.\n");
+		exit(-1);
 	}
 }

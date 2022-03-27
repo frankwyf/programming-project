@@ -23,7 +23,7 @@ int load_users(FILE *userfile){
         exit(-1);
     }
     else{
-        printf("\nWelcom to user system!\n");
+        printf("\nWelcom to user system!\n\n");
         User *p,*last;
         Createlibrarian(admin);//set the linked list node of librarain
         Createuser(admin->UserList);
@@ -100,57 +100,59 @@ int load_loan(FILE *file, BookList *show){
 		Booklist(show);//creat the header node
 		CreateNode(show->list);
 		last=show->list;
-		char temp[1024];//read in a whole line form the text file
-		memset(temp, '\0', 1024);//initialize the temp string
-		char *frtn=fgets(temp,sizeof(temp),loan);
+		char try[1024];//read in a whole line form the text file
+		memset(try, '\0', 1024);//initialize the temp string
+		char *f=fgets(try,sizeof(try),loan);
 		int i;
 		for (i=0;i<=1024;i++){
-			if (temp[i]=='\n'){
-				temp[i]='\0';
+			if (try[i]=='\n'){
+				try[i]='\0';
 			}
 		}//delete the '/n' at the end of the line
-		while (frtn != NULL){//read file till the end (an empty line)
+		while (f != NULL){//read file till the end (an empty line)
 		    CreateNode(p);//create the first real node
-			char *ptr=strtok(temp,",");//cut the input string by comma
+			char *t=strtok(try,",");//cut the input string by comma
 			int row=0;
-			while (ptr != NULL){
+			while (t != NULL){
 				switch (row){//copying data into the data part in a node
 					case 0:
-					    p->id=atoi(ptr);
 					    break;
 					case 1:
-					    p->title=ptr;
+					    p->id=atoi(t);
+					    break;
+					case 2:
+					    p->title=t;
 						int i;
 						i=strlen(p->title);
 						p->title=(char *)malloc(i*sizeof(char));
-						strcpy(p->title,ptr);
+						strcpy(p->title,t);
 					    break;
-					case 2:
-					    p->authors=ptr;
+					case 3:
+					    p->authors=t;
 						int j;
 						j=strlen(p->authors);
 						p->authors=(char *)malloc(i*sizeof(char));
-						strcpy(p->authors,ptr);
-					    break;
-					case 3:
-					    p->year=atoi(ptr);
+						strcpy(p->authors,t);
 					    break;
 					case 4:
-					    p->copies=atoi(ptr);
+					    p->year=atoi(t);
+					    break;
+					case 5:
+					    p->copies=atoi(t);
 					    break;
 				}
 				row+=1;
-				ptr=strtok(NULL,",");
+				t=strtok(NULL,",");
 			}
 			p->next=NULL;
 			last->next=p;
 			last=p;//iserting a new node into the linked list
-		    memset(temp, '\0', 1024);
-            frtn = fgets(temp,sizeof(temp),file);//read in the second line
+		    memset(try, '\0', 1024);
+            f = fgets(try,sizeof(try),loan);//read in the second line
 		    int j;
 		    for (j=0;j<=1024;j++){
-			    if (temp[j]=='\n'){
-				    temp[j]='\0';
+			    if (try[j]=='\n'){
+				    try[j]='\0';
 			    }
 		    }//delete the '/n' at the end of the line
 		}
@@ -189,20 +191,25 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 			return 1;
 		}
 	    int loop=0;//for loop around the whole list
+		Book *p,*end;
+		end=lpointer->list;
 	    while (loop<lpointer->length){
 			//borrow operations
-			if (lpointer->list->id==borrow_id){
+			CreateNode(p);
+			p=end->next;
+			if (p->id==borrow_id){
 				//copy the book to the user's loan file
-				fprintf(loan,"%i,%i,%s,%s,%i,%i\n",borrowuser->id,lpointer->list->id,lpointer->list->title,lpointer->list->authors,lpointer->list->year,1);
+				fprintf(loan,"%i,%i,%s,%s,%i,%i\n",borrowuser->id,p->id,p->title,p->authors,p->year,1);
                //since one user cna oy have one copy of ecah book,the copies is set to 1
-				lpointer->list->copies=lpointer->list->copies-1;//cut one from the libraray
+				p->copies=p->copies-1;//cut one from the libraray
 			    borrowuser->borrowed->length+=1;//record the length of loan
 				loop+=1;
 				printf("\nYou have successfuly borrowed this book!\n");
 				return 0;
 			}
 			else{
-			    lpointer->list=lpointer->list->next;
+				end=p;
+			    p=p->next;
 			    loop+=1;
 		    }
 	    }
@@ -211,12 +218,6 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 }
 
 int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
-	if (returnuser->borrowed->length==0){
-		printf("\nIt seems you haven't borrowed any books yet.\n");
-		return 1;
-	}
-	else{
-		BookList *show;
 		load_loan(loan,show);
 		printf("\nBelow is the list of books you aer currently borrowing:\n");
 		print_title();
@@ -241,7 +242,6 @@ int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
 	    }
 	    int return_id=(int)atoi(str);//read in the ID for borrow operations
 
-	}
 }
 
 //fucntion for user register
@@ -288,6 +288,10 @@ int user_regist(FILE *userfile){
 	else{
 		fprintf(userfile,"%i,%s,%s,%s\n",newid,name,username,password);
 		fclose(userfile);
+		free(name);
+		free(username);
+		free(password);
+		printf("\nYou have registered successfully!\n");
 		return 0;
 	}
 }
@@ -370,7 +374,7 @@ void login(FILE *userfile){
 			                print_all_books(lpointer);
 			                break;
 		                case 5:
-			                printf("\nThank you for managing the library!\n Loging you out...\n\n");
+			                printf("\nThank you for managing the library!\nLoging you out...\n\n");
 			                return;
 		                default:
 			                printf("\nSorry, the option you entered was invalid, please try agian.\n");

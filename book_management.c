@@ -36,6 +36,7 @@ void print_all_books(BookList *lpointer){
 }
 
 int load_books(FILE *file){
+	file=fopen("books.txt","r");
 	if (file==NULL){
 		printf("File cannot open!\n");
 		return -1;
@@ -285,5 +286,23 @@ int search_for_books(BookList *lpointer){
 }
 
 int store_books(FILE *file){
-
+	file=fopen("books.txt","w");
+	if (file==NULL){
+		printf("\nFatal error! Book file is missing!\n");
+		return 1;
+	}
+	else{
+		Book *store,*final;
+	    final=lpointer->list;
+	    CreateNode(store);
+	    store=final->next;
+	    int list_long=0;
+	    while (list_long<lpointer->length){
+		    fprintf(file,"%i,%s,%s,%i,%i\n",store->id,store->title,store->authors,store->year,store->copies);
+		    final=store;
+		    store=store->next;
+		    list_long+=1;
+	    }
+		return 0;//showing success of store books
+	}
 }
