@@ -65,8 +65,6 @@ BookList find_book_by_year (unsigned int year);
 //The below are some of the changes I made to the provided header file
 FILE *file;//global varibale: poniter for the file
 BookList *lpointer;//header node of the  linked list of books
-Book Addbook;//the book strcture used for librarian to add a book
-Book Removebook;//the book structure used for librarian to remove a book
 const char *title;//search by title
 const char *author;//search by author
 unsigned int year;//search by year

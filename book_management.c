@@ -210,6 +210,11 @@ BookList find_book_by_year (unsigned int year){
 	char *str=(char *)malloc(sizeof(int)*4+sizeof(char));//the maxium length of a year is 4 digit + one for the '\n'
 	fgets(str,18,stdin);
 	int i=strlen(str);
+	if (i>5){//the lenght of a year can be maximum at 4 digits (and one '\n')
+		printf("\nThis is an invalid year!\n");
+		find_book_by_year->list=NULL;
+		return *find_book_by_year;
+	}
 	str[i-1]='\0';//get rid of the '\n' at the last of the input
 	int j;
 	for (j=0;j<i-1;j++){
@@ -301,6 +306,7 @@ int store_books(FILE *file){
 		    fprintf(file,"%i,%s,%s,%i,%i\n",store->id,store->title,store->authors,store->year,store->copies);
 		    final=store;
 		    store=store->next;
+			free(final);
 		    list_long+=1;
 	    }
 		return 0;//showing success of store books

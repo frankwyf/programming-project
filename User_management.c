@@ -192,6 +192,7 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 	}
 	else{
 		//check whether the user has borrowed a copy of the book
+		//need to check form the loan file
 		if (borrowuser->borrowed->list->id==borrow_id){
 			printf("\nSorry, you already have a copy of this book on loan!\n");
 			return 1;
@@ -204,14 +205,21 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 			CreateNode(p);
 			p=end->next;
 			if (p->id==borrow_id){
-				//copy the book to the user's loan file
-				fprintf(loan,"%i,%i,%s,%s,%i,%i\n",borrowuser->id,p->id,p->title,p->authors,p->year,1);
-               //since one user cna oy have one copy of ecah book,the copies is set to 1
-				p->copies=p->copies-1;//cut one from the libraray
-			    borrowuser->borrowed->length+=1;//record the length of loan
-				loop+=1;
-				printf("\nYou have successfuly borrowed this book!\n");
-				return 0;
+				//check whether there is an available copy
+				if (p->copies==0){
+					printf("\nSorry! There is no avaliable copies for borrowing!\n");
+					return 1;
+				}
+				else{
+					//copy the book to the user's loan file
+				    fprintf(loan,"%i,%i,%s,%s,%i,%i\n",borrowuser->id,p->id,p->title,p->authors,p->year,1);
+                    //since one user cna oy have one copy of ecah book,the copies is set to 1
+				    p->copies=p->copies-1;//cut one from the libraray
+			        borrowuser->borrowed->length+=1;//record the length of loan
+				    loop+=1;
+				    printf("\nYou have successfuly borrowed this book!\n");
+				    return 0;
+				}
 			}
 			else{
 				end=p;
@@ -276,7 +284,7 @@ int add_book(Book book){
 	add_author[x-1]='\0';//get rid of the '\n' at the last of the input
 	int y;
 	for (y=0;y<x-1;y++){
-		if (isdigit(add_author[j])){
+		if (isdigit(add_author[y])){
 			printf("\nThis is an invalid book title!\n");
 			return 1;
 		}
@@ -289,6 +297,10 @@ int add_book(Book book){
 	char *add_year=(char *)malloc(sizeof(int)*4+sizeof(char));//the maxium length of a year is 4 digit + one for the '\n'
 	fgets(add_year,18,stdin);
 	int m=strlen(add_year);
+	if (m>5){//the lenght of a year can be maximum at 4 digits (and one '\n')
+	    printf("\nThis is an invalid year!\n");
+		return 1;
+	}
 	add_year[m-1]='\0';//get rid of the '\n' at the last of the input
 	int n;
 	for (n=0;n<m-1;n++){
@@ -306,6 +318,10 @@ int add_book(Book book){
 	char *add_copies=(char *)malloc(sizeof(int)*4+sizeof(char));//the maxium length of a year is 4 digit + one for the '\n'
 	fgets(add_copies,18,stdin);
 	int a=strlen(add_copies);
+	if (a>5){//the lenght of a year can be maximum at 4 digits (and one '\n')
+		printf("\nThis is an invalid year!\n");
+		return 1;
+	}
 	add_copies[a-1]='\0';//get rid of the '\n' at the last of the input
 	int b;
 	for (b=0;b<a-1;b++){
@@ -338,8 +354,55 @@ int add_book(Book book){
 	temp->next=add;
 	add->next=NULL;
 	lpointer->length+=1;
-	printf("\nThe book %s is successfuly added to the library!\n",book.title);
+	printf("\nThe book: %s is successfuly added to the library!\n",book.title);
+	//free the pointers used to read in data
+	free(add_year);
+	free(add_copies);
 	return 0;
+}
+
+//function for librarian to remove a book from the book list(by id)
+int remove_book(Book book){
+	//by the id of the book
+	printf("Enter the id of the book you want to remove: ");
+	char *remove_id=(char *)malloc(sizeof(int)*10+sizeof(char));//the maxium length of a id maybe 10 digits + one for the '\n'
+	fgets(remove_id,51,stdin);
+	int a=strlen(remove_id);
+	remove_id[a-1]='\0';//get rid of the '\n' at the last of the input
+	int b;
+	for (b=0;b<a-1;b++){
+		if (!isdigit(remove_id[b])){
+			printf("\nThis is an invalid book id!\n");
+			return 1;
+		}
+		else{continue;}
+	}
+	int removeid=atoi(remove_id);
+	book.id=removeid;
+
+	//deleted the specified node in the book list
+	Book *p1,*p;
+	p=lpointer->list;
+	while (p->next!=NULL){
+		p1=p;
+		p=p->next;
+		if (book.id==p->id){
+			p1->next=p->next;
+			free(p);
+			p=p1->next;
+			printf("\nBook(ID): %i has been removed successfuly.\n",book.id);
+			lpointer->length=lpointer->length-1;//reduce the length of the booklist by 1
+			free(remove_id);//free the char * used to read in the book id
+			int track;//to track whetehr all the booklist has been modified correctly
+			track=p1->id;
+			while (track<lpointer->length){
+				p->id=p->id-1;//o move forward the book id after the deleted node by 1
+				p=p->next;
+				track+=1;
+			}
+			return 0;
+		}
+	}
 }
 
 //fucntion for user register
@@ -368,7 +431,7 @@ int user_regist(FILE *userfile){
 	username[m-1]='\0';//get rid of the '\n' at the last of the input
 	
 	//get password
-	printf("Please enter your username(no more than 10 letters or 10 intergers): ");
+	printf("Please enter your password(no more than 10 letters or 10 intergers): ");
 	char *password=(char *)malloc(sizeof(char)*10+sizeof(int)*10);//the maxium length of a username maybe is 100 characters
 	fgets(password,50,stdin);
 	int k=strlen(password);
@@ -458,11 +521,10 @@ void login(FILE *userfile){
 	                free(answer);
 		            switch (lchoice) {
 		                case 1:
-			                add_book(Addbook);
+			                add_book(book);
 			                break;
 			            case 2:
-						    printf("l2");
-			                //remove_book(Removebook);
+			                remove_book(book);
 			                break;
 			            case 3:
 			                search_for_books(lpointer);

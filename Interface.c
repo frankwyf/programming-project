@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define CreateNode(p) p=(Book *)malloc(sizeof(Book));
 #define Booklist(p) p=(BookList *)malloc(sizeof(BookList));
@@ -27,12 +28,20 @@ char *user_input(const char *input) {
 		answer = realloc(answer, size_step + iteration*size_step);
 		next_input = answer + strlen(answer); //answer may have moved.
 		fgets(next_input, size_step, stdin);
-
+		
 		next_input = answer + strlen(answer); //take the new read into account
 		++iteration;
 	} while (* (next_input-1) != '\n');
 
 	*(next_input-1) = 0; //truncate the string eliminating the new line.
+	int i,j;
+	i=strlen(answer);
+	for (j=0;j<i;j++){
+		if (!isdigit(answer[j])){
+			answer=0;
+			return answer;
+		}
+	}
 
 	return answer;
 }
