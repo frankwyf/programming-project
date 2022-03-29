@@ -2,11 +2,11 @@
 2,Programming in C,Isaac Asimov,1972,20
 3,Programming in python,William Gibson,2009,15
 4,Programming in C++,Ray Bradbury,2000,5
-5,Programming in HTML,Andy Weir,2010,8
-6,CSS + HTML,Neal Stephenson,2010,12
+5,Programming in HTML,Andy Weir,2010,7
+6,CSS + HTML,Neal Stephenson,2010,11
 7,Peace and War,Jeff Noon,1980,3
-8,C primer plus,Pearson,1990,36
+8,C primer plus,Pearson,1990,35
 9,Java and python,Pearson,2010,20
-10,Data structure and Algorithm,Pearson,2017,20
+10,Data structure and Algorithm,Pearson,2017,18
 11,Computer Processor,Andy,2000,10
 12,Database,Julia Rose,2008,20

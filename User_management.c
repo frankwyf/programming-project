@@ -14,6 +14,7 @@
 #define Showlist(p) p=(ShowList *)malloc(sizeof(ShowList));
 
 
+
 //load the users into the linked list
 //Librarian also serve as the head node of the user linked list
 int load_users(FILE *userfile){
@@ -89,7 +90,7 @@ int load_users(FILE *userfile){
 	}
 }
 //function to load the loan file
-int load_loan(FILE *userfile, ShowList *show,User *LoginCheck){
+int load_loan(FILE *userfile, ShowList *show,User *returnuser){
 	loan=fopen("loan.txt","r");
 	if (loan==NULL){
 		printf("Loan file cannot open!\n");
@@ -103,10 +104,22 @@ int load_loan(FILE *userfile, ShowList *show,User *LoginCheck){
 		char try[1024];//read in a whole line form the text file
 		memset(try, '\0', 1024);//initialize the temp string
 		char *f=fgets(try,sizeof(try),loan);
+		//when open a empty loan file
+		if (f==NULL){
+			printf("\nThe loan file is empty! Borrow some book first!\n");
+			return 1;
+		}
+		//open a file in "a" prints a '\n' at first line
+		if (f[0]=='\n'){
+			memset(try, '\0', 1024);
+		    char *f=fgets(try,sizeof(try),loan);
+		}
+		//skip this empty line since it doesn't has any meaning
 		int i;
 		for (i=0;i<=1024;i++){
 			if (try[i]=='\n'){
 				try[i]='\0';
+				break;
 			}
 		}//delete the '/n' at the end of the line
 		while (f != NULL){//read file till the end (an empty line)
@@ -114,9 +127,10 @@ int load_loan(FILE *userfile, ShowList *show,User *LoginCheck){
 			char *t=strtok(try,",");//cut the input string by comma
 
 			//only get the loan of the user who is currently logged in
-			if (atoi(t)==LoginCheck->id){
-				show->userid=LoginCheck->id;//copying the user id to show data structure
-				t=strtok(try,",");//read in real data
+			int Check_user=atoi(t);
+			if (Check_user==returnuser->id){
+				show->userid=Check_user;//copying the user id to show data structure
+				t=strtok(NULL,",");//read in real data
 				int row=0;
 			    while (t != NULL){
 				    switch (row){//copying data into the data part in a node
@@ -151,15 +165,13 @@ int load_loan(FILE *userfile, ShowList *show,User *LoginCheck){
 			    last->next=p;
 			    last=p;//iserting a new node into the linked list
 			}
-			else{
-
-			}
 		    memset(try, '\0', 1024);
             f = fgets(try,sizeof(try),loan);//read in the second line
 		    int j;
 		    for (j=0;j<=1024;j++){
 			    if (try[j]=='\n'){
 				    try[j]='\0';
+					break;
 			    }
 		    }//delete the '/n' at the end of the line
 		}
@@ -213,11 +225,11 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 				else{
 					//copy the book to the user's loan file
 				    fprintf(loan,"%i,%i,%s,%s,%i,%i\n",borrowuser->id,p->id,p->title,p->authors,p->year,1);
-                    //since one user cna oy have one copy of ecah book,the copies is set to 1
+					//only need to know the userid book title and the yaer fir tarck of the book(even by search) 
 				    p->copies=p->copies-1;//cut one from the libraray
 			        borrowuser->borrowed->length+=1;//record the length of loan
 				    loop+=1;
-				    printf("\nYou have successfuly borrowed this book!\n");
+				    printf("\nYou have successfuly borrowed this book: %s!\n",p->title);
 				    return 0;
 				}
 			}
@@ -232,15 +244,21 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 }
 
 int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
-		load_loan(loan,show,LoginCheck);
-		printf("\nBelow is the list of books you aer currently borrowing:\n");
-		print_title();
-		Book *print;
-	    print=show->loan->next;
-	    while(print!=NULL){
-			printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",print->id,print->title,print->authors,print->year,print->copies);//output formates
-		    print=print->next;
-	    }
+		if (load_loan(loan,show,returnuser)==0){
+			printf("\nBelow is the list of books you aer currently borrowing:\n");
+		    print_title();
+			Book *return_show;
+			return_show=show->loan->next;
+			while(return_show!=NULL){
+			    printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",return_show->id,return_show->title,return_show->authors,return_show->year,return_show->copies);//output formates
+		        return_show=return_show->next;
+	        }
+		}
+		else{
+			printf("\nReturn system failed...\n");
+			return 1;
+		}
+		//ask the user to enter the id of the book he/she wishes to return
 		printf("Enter the ID number you want to return: ");
 		char *str=(char *)malloc(sizeof(int)*5+sizeof(char));//the maxium length of a ID maybe is 4 digit(range from 0~99999) + one for the '\n'
 	    fgets(str,21,stdin);
@@ -255,6 +273,8 @@ int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
 		    else{continue;}
 	    }
 	    int return_id=(int)atoi(str);//read in the ID for borrow operations
+
+		//return operation is presented below
 
 }
 
@@ -453,6 +473,7 @@ int user_regist(FILE *userfile){
 		free(username);
 		free(password);
 		printf("\nYou have registered successfully!\n");
+		printf("\nChoose option 2 if you want to login right after.\n");
 		return 0;
 	}
 }
@@ -480,7 +501,7 @@ void login(FILE *userfile){
 			    success=1;
 				Booklist(LoginCheck->borrowed);//creat the bokklist of loan books embedded in the particular user
 	            CreateNode(LoginCheck->borrowed->list);//creat the first node in the booklist struct as the head node of the loan list
-	            LoginCheck->borrowed->list->id=0;//initialize the loan list by id
+				LoginCheck->borrowed->list->id=0;//initialize the loan list by id
             	LoginCheck->borrowed->length=0;//initialize the length of the booklist
                 printf("\n(Successfully logged in as: %s)\n",LoginCheck->username);
 				//interface for normal user
