@@ -5,7 +5,7 @@
 #include <string.h>
 
 int main(){
-    printf("\nWelcome to the librbay system!\nPlease enter the name of:book file,user file,loan file\n");
+    printf("\nWelcome to the librbay system!\n");
     run_system();
     return 0;
 }

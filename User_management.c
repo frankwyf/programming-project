@@ -1,6 +1,7 @@
 #include"interface.h"
 #include"user_management.h"
 #include"book_management.h"
+#include "management.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +13,7 @@
 #define Createuser(p) p=(User *)malloc(sizeof(User));
 #define Createlibrarian(p) p=(Librarian *)malloc(sizeof(Librarian));
 #define Showlist(p) p=(ShowList *)malloc(sizeof(ShowList));
-
+#define Createloan(p) p=(Loan *)malloc(sizeof(Loan));
 
 
 //load the users into the linked list
@@ -188,6 +189,17 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 	else{
 		//check whether the user has borrowed a copy of the book
 		load_loan(userfile,borrowuser);
+		Book *repeat;
+		repeat=borrowuser->borrowed->list;
+		while (repeat!=NULL){
+			if (repeat->id==borrow_id){
+				printf("\nSorry! It seems that you have borrowed a copy of : %i,%s !\n",repeat->id,repeat->title);
+				return 1;
+			}
+			else{
+				repeat=repeat->next;
+			}
+		}
 		
 		if (borrowuser->borrowed->list->id)
 		//need to check form the loan file
@@ -237,7 +249,7 @@ int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
 				return 1;
 		    }
 			//if there is at least one loan record
-			printf("\nBelow is the list of books you aer currently borrowing:\n");
+			printf("\nBelow is the list of books you aer currently borrowing:\n\n");
 		    print_title();
 			Book *return_show;
 			return_show=returnuser->borrowed->list->next;
@@ -251,7 +263,7 @@ int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
 			return 1;
 		}
 		//ask the user to enter the id of the book he/she wishes to return
-		printf("Enter the ID number you want to return: ");
+		printf("\nEnter the ID number you want to return: ");
 		char *str=(char *)malloc(sizeof(int)*5+sizeof(char));//the maxium length of a ID maybe is 4 digit(range from 0~99999) + one for the '\n'
 	    fgets(str,21,stdin);
 	    int i=strlen(str);
@@ -273,20 +285,48 @@ int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
 
 		Book *returnp,*lastp;
 		lastp=lpointer->list;
-		int whole=0;//to loop through the booklist
-		while (whole<lpointer->length){
-			CreateNode(returnp);
-			returnp=lastp->next;
-			if (returnp->id==return_id){
-				returnp->copies+=1;//add the copy bakc to the book list
+		CreateNode(returnp);
+		returnp=lastp->next;
+		while (returnp!=NULL){
+			if (returnp->id==return_id){//find the book to be return
+				returnp->copies+=1;//add the copy back to the book list
 				returnuser->borrowed->length=returnuser->borrowed->length-1;//reduce the length of the user borrwed list
 				//adjust the loan file
+			    if (load_all_loans(loan)==0){//load in all the loans records
+				    Loan *r,*last;
+					last=all->loanlist;
+					Createloan(r);
+					r=last->next;
+					while (r!=NULL){
+						if (return_id==r->bookid){
+							last->next=r->next;
+							free(r);
+							all->total=all->total-1;//reduce the length of the loans by one
+							//rewrite the loan file
+							if (store_loans(loan)==0){
+								printf("\nThe book %i,%s has been successfully returned!\n",returnp->id,returnp->title);
+								return 0;
+							}
+							else{
+								printf("\nUpdating loan file failed! Please contact the librarian for help.\n");
+								return 1;
+							}
+						}
+						else{
+							r=r->next;
+							last=last->next;
+						}
+					}
+				}
+				else{
+					printf("\nFailed to load loan records!\n");
+					return 1;
+				}
 			}
-			else{
+			else{//not find the book to be returned in the original book list
 				returnp=returnp->next;
 			}
 		}
-		
 }
 
 //function for librarian to add a book to the book list

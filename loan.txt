@@ -1,4 +1,2 @@
 2,8,C primer plus,Pearson,1990,1
-5,10,Data structure and Algorithm,Pearson,2017,1
 8,6,CSS + HTML,Neal Stephenson,2010,1
-2,2,Programming in C,Isaac Asimov,1972,1

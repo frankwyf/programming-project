@@ -23,21 +23,20 @@
 //used when user is returning book
 //read out the whole loan file,returns 0 if success, else return 1
 int load_all_loans(FILE *loan){
-	loan=fopen("books.txt","r");
+	loan=fopen("loan.txt","r");
 	if (loan==NULL){
 		printf("File cannot open!\n");
-		return -1;
+		return 1;
 	}
 	else{
 		Loan *p,*last;
         Createloanlist(all);
 		Createloan(all->loanlist);//creat the header node
+        all->total=0;
 		last=all->loanlist;
-
-        
 		char temp[1024];//read in a whole line form the text file
 		memset(temp, '\0', 1024);//initialize the temp string
-		char *frtn=fgets(temp,sizeof(temp),file);
+		char *frtn=fgets(temp,sizeof(temp),loan);
 		int i=strlen(temp);
 		temp[i-1]='\0';//delete the '/n' at the end of the line
 		while (frtn != NULL){//read file till the end (an empty line)
@@ -75,16 +74,42 @@ int load_all_loans(FILE *loan){
 				row+=1;
 				ptr=strtok(NULL,",");
 			}
+            all->total+=1;//add the length of all by 1 
 			p->next=NULL;
 			last->next=p;
 			last=p;//iserting a new node into the linked list
 		    memset(temp, '\0', 1024);
-            frtn = fgets(temp,sizeof(temp),file);//read in the second line
+            frtn = fgets(temp,sizeof(temp),loan);//read in the second line
 		    int j=strlen(temp);
 			temp[j-1]='\0';//delete the '/n' at the end of the line
 		}
-		//the length of all
-		fclose(file);
+		fclose(loan);
 		return 0;
 	}	
+}
+/*this function is used to store the data after retrun a book
+it rewrites the loan file with the updated loan list */
+
+int store_loans(FILE *loan){
+	loan=fopen("loan.txt","w");
+	if (loan==NULL){
+		printf("\nLoan file is missing!\n");
+		return 1;
+	}
+	else{
+		Loan *store,*final;
+	    final=all->loanlist;
+	    Createloan(store);
+	    store=final->next;
+	    int list_long=0;
+	    while (list_long<all->total){
+		    fprintf(loan,"%i,%i,%s,%s,%i,%i\n",store->user,store->bookid,store->title,store->authors,store->year,store->copies);
+		    final=store;
+		    store=store->next;
+			free(final);
+		    list_long+=1;
+	    }
+        fclose(loan);
+		return 0;//showing success of store books
+	}
 }

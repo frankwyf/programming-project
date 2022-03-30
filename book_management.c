@@ -301,6 +301,7 @@ int store_books(FILE *file){
 			free(final);
 		    list_long+=1;
 	    }
+		fclose(file);
 		return 0;//showing success of store books
 	}
 }
