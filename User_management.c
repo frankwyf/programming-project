@@ -32,12 +32,9 @@ int load_users(FILE *userfile){
         char tem[1024];//read in a whole line form the text file
 	    memset(tem, '\0', 1024);//initialize the temp string
 	    char *pt=fgets(tem,sizeof(tem),userfile);
-	    int i;
-	    for (i=0;i<=1024;i++){
-		    if (tem[i]=='\n'){
-                tem[i]='\0';
-		    }
-	    }//delete the '/n' at the end of the line 
+	    int i=strlen(tem);
+		tem[i-1]='\0';
+	    //delete the '/n' at the end of the line 
 	    while (pt != NULL){
             Createuser(p);
             char *data=strtok(tem,",");//cut the input string by comma
@@ -77,12 +74,8 @@ int load_users(FILE *userfile){
 			last=p;//iserting a new node into the linked list
 		    memset(tem, '\0', 1024);
             pt = fgets(tem,sizeof(tem),userfile);//read in the second line
-		    int j;
-		    for (j=0;j<=1024;j++){
-			    if (tem[j]=='\n'){
-				    tem[j]='\0';
-			    }
-		    }//delete the '/n' at the end of the line
+		    int j=strlen(tem);
+		    tem[j-1]='\0';//delete the '/n' at the end of the line
 		}
 		admin->users=last->id;//the length of the booklist
 		fclose(userfile);
@@ -90,7 +83,7 @@ int load_users(FILE *userfile){
 	}
 }
 //function to load the loan file
-int load_loan(FILE *userfile, ShowList *show,User *returnuser){
+int load_loan(FILE *userfile,User *returnuser){
 	loan=fopen("loan.txt","r");
 	if (loan==NULL){
 		printf("Loan file cannot open!\n");
@@ -98,9 +91,7 @@ int load_loan(FILE *userfile, ShowList *show,User *returnuser){
 	}
 	else{
 		Book *p,*last;
-		Showlist(show);//creat the header node
-		CreateNode(show->loan);
-		last=show->loan;
+		last=returnuser->borrowed->list;
 		char try[1024];//read in a whole line form the text file
 		memset(try, '\0', 1024);//initialize the temp string
 		char *f=fgets(try,sizeof(try),loan);
@@ -115,13 +106,8 @@ int load_loan(FILE *userfile, ShowList *show,User *returnuser){
 		    char *f=fgets(try,sizeof(try),loan);
 		}
 		//skip this empty line since it doesn't has any meaning
-		int i;
-		for (i=0;i<=1024;i++){
-			if (try[i]=='\n'){
-				try[i]='\0';
-				break;
-			}
-		}//delete the '/n' at the end of the line
+		int i=strlen(try);
+		try[i-1]='\0';//delete the '/n' at the end of the line
 		while (f != NULL){//read file till the end (an empty line)
 		    CreateNode(p);//create the first real node
 			char *t=strtok(try,",");//cut the input string by comma
@@ -129,7 +115,7 @@ int load_loan(FILE *userfile, ShowList *show,User *returnuser){
 			//only get the loan of the user who is currently logged in
 			int Check_user=atoi(t);
 			if (Check_user==returnuser->id){
-				show->userid=Check_user;//copying the user id to show data structure
+				returnuser->id=Check_user;//copying the user id to show data structure
 				t=strtok(NULL,",");//read in real data
 				int row=0;
 			    while (t != NULL){
@@ -164,16 +150,12 @@ int load_loan(FILE *userfile, ShowList *show,User *returnuser){
 			    p->next=NULL;
 			    last->next=p;
 			    last=p;//iserting a new node into the linked list
+				returnuser->borrowed->length+=1;//add 1 to the length of the borrowed book list of the particular user
 			}
 		    memset(try, '\0', 1024);
             f = fgets(try,sizeof(try),loan);//read in the second line
-		    int j;
-		    for (j=0;j<=1024;j++){
-			    if (try[j]=='\n'){
-				    try[j]='\0';
-					break;
-			    }
-		    }//delete the '/n' at the end of the line
+		    int j=strlen(try);
+			try[j-1]='\0';//delete the '/n' at the end of the line
 		}
 		fclose(loan);
 		return 0;
@@ -198,12 +180,16 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 		else{continue;}
 	}
 	int borrow_id=(int)atoi(str);//read in the ID for borrow operations 
+
 	if (borrow_id>lpointer->length || borrow_id<1){
 		printf("\nID out of range! Please re-enter.\n");
 		return 1;
 	}
 	else{
 		//check whether the user has borrowed a copy of the book
+		load_loan(userfile,borrowuser);
+		
+		if (borrowuser->borrowed->list->id)
 		//need to check form the loan file
 		if (borrowuser->borrowed->list->id==borrow_id){
 			printf("\nSorry, you already have a copy of this book on loan!\n");
@@ -230,6 +216,7 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 			        borrowuser->borrowed->length+=1;//record the length of loan
 				    loop+=1;
 				    printf("\nYou have successfuly borrowed this book: %s!\n",p->title);
+					fclose(loan);
 				    return 0;
 				}
 			}
@@ -240,21 +227,26 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 		    }
 	    }
 	}
-	fclose(loan);
 }
 
 int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
-		if (load_loan(loan,show,returnuser)==0){
+		if (load_loan(loan,returnuser)==0){
+			//check whether the user have borrowed any books yet
+            if (returnuser->borrowed->length==0){
+			   	printf("\nYou haven't borrowed any book!\n");
+				return 1;
+		    }
+			//if there is at least one loan record
 			printf("\nBelow is the list of books you aer currently borrowing:\n");
 		    print_title();
 			Book *return_show;
-			return_show=show->loan->next;
+			return_show=returnuser->borrowed->list->next;
 			while(return_show!=NULL){
 			    printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",return_show->id,return_show->title,return_show->authors,return_show->year,return_show->copies);//output formates
 		        return_show=return_show->next;
 	        }
 		}
-		else{
+		else{//fail to load loan
 			printf("\nReturn system failed...\n");
 			return 1;
 		}
@@ -274,8 +266,27 @@ int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
 	    }
 	    int return_id=(int)atoi(str);//read in the ID for borrow operations
 
-		//return operation is presented below
+		/*return operation is presented below
+        "return" the book to the library by adding the copies by 1
+		delete the loan record in the loan file
+		*/
 
+		Book *returnp,*lastp;
+		lastp=lpointer->list;
+		int whole=0;//to loop through the booklist
+		while (whole<lpointer->length){
+			CreateNode(returnp);
+			returnp=lastp->next;
+			if (returnp->id==return_id){
+				returnp->copies+=1;//add the copy bakc to the book list
+				returnuser->borrowed->length=returnuser->borrowed->length-1;//reduce the length of the user borrwed list
+				//adjust the loan file
+			}
+			else{
+				returnp=returnp->next;
+			}
+		}
+		
 }
 
 //function for librarian to add a book to the book list

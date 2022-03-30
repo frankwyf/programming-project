@@ -10,7 +10,7 @@
 
 #define CreateNode(p) p=(Book *)malloc(sizeof(Book));
 #define Booklist(p) p=(BookList *)malloc(sizeof(BookList));
-#define DeleteNode(p) free((void *)p);
+
 
 
 void print_title(){
@@ -49,12 +49,8 @@ int load_books(FILE *file){
 		char temp[1024];//read in a whole line form the text file
 		memset(temp, '\0', 1024);//initialize the temp string
 		char *frtn=fgets(temp,sizeof(temp),file);
-		int i;
-		for (i=0;i<=1024;i++){
-			if (temp[i]=='\n'){
-				temp[i]='\0';
-			}
-		}//delete the '/n' at the end of the line
+		int i=strlen(temp);
+		temp[i-1]='\0';//delete the '/n' at the end of the line
 		while (frtn != NULL){//read file till the end (an empty line)
 		    CreateNode(p);//create the first real node
 			char *ptr=strtok(temp,",");//cut the input string by comma
@@ -93,12 +89,8 @@ int load_books(FILE *file){
 			last=p;//iserting a new node into the linked list
 		    memset(temp, '\0', 1024);
             frtn = fgets(temp,sizeof(temp),file);//read in the second line
-		    int j;
-		    for (j=0;j<=1024;j++){
-			    if (temp[j]=='\n'){
-				    temp[j]='\0';
-			    }
-		    }//delete the '/n' at the end of the line
+		    int j=strlen(temp);
+			temp[j-1]='\0';//delete the '/n' at the end of the line
 		}
 		lpointer->length=last->id;//the length of the booklist
 		fclose(file);
