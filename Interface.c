@@ -80,7 +80,7 @@ void run_system(){
         } while (choice != 5);
 	}
 	else{
-		printf("Failed to load book data!\nPlease try agian.\n");
+		printf("Failed to load book data!\n");
 		exit(-1);
 	}
 }

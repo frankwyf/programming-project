@@ -19,7 +19,7 @@
 //load the users into the linked list
 //Librarian also serve as the head node of the user linked list
 int load_users(FILE *userfile){
-    userfile=fopen("user.txt","r");
+    userfile=fopen(Userfile,"r");
     if (userfile==NULL){
         printf("Failed to load the user file! Please contact the librarian.\n");
         exit(-1);
@@ -85,7 +85,7 @@ int load_users(FILE *userfile){
 }
 //function to load the loan file
 int load_loan(FILE *userfile,User *returnuser){
-	loan=fopen("loan.txt","r");
+	loan=fopen(loanfile,"r");
 	if (loan==NULL){
 		printf("Loan file cannot open!\n");
 		return -1;
@@ -166,7 +166,7 @@ int load_loan(FILE *userfile,User *returnuser){
 
 //funtion used for users to borrow a book
 int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
-    loan=fopen("loan.txt","a");
+    loan=fopen(loanfile,"a");
 	printf("Enter the ID of the book you wish to borrow: ");
 	char *str=(char *)malloc(sizeof(int)*5+sizeof(char));//the maxium length of a ID maybe is 4 digit(range from 0~99999) + one for the '\n'
 	fgets(str,21,stdin);
@@ -282,7 +282,6 @@ int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
         "return" the book to the library by adding the copies by 1
 		delete the loan record in the loan file
 		*/
-
 		Book *returnp,*lastp;
 		lastp=lpointer->list;
 		CreateNode(returnp);
@@ -511,7 +510,7 @@ int user_regist(FILE *userfile){
 	int newid=admin->users+1;//set the new user ID
 
 	//write in the new user's information to user.txt
-	userfile=fopen("user.txt","a");
+	userfile=fopen(Userfile,"a");
 	if (userfile==NULL){
 		printf("\nFail to open user file. Contact the librarian.\n");
 		fclose(userfile);

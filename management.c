@@ -23,7 +23,7 @@
 //used when user is returning book
 //read out the whole loan file,returns 0 if success, else return 1
 int load_all_loans(FILE *loan){
-	loan=fopen("loan.txt","r");
+	loan=fopen(loanfile,"r");
 	if (loan==NULL){
 		printf("File cannot open!\n");
 		return 1;
@@ -91,7 +91,7 @@ int load_all_loans(FILE *loan){
 it rewrites the loan file with the updated loan list */
 
 int store_loans(FILE *loan){
-	loan=fopen("loan.txt","w");
+	loan=fopen(loanfile,"w");
 	if (loan==NULL){
 		printf("\nLoan file is missing!\n");
 		return 1;

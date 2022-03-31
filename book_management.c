@@ -36,7 +36,7 @@ void print_all_books(BookList *lpointer){
 }
 
 int load_books(FILE *file){
-	file=fopen("books.txt","r");
+	file=fopen(bookfile,"r");
 	if (file==NULL){
 		printf("File cannot open!\n");
 		return -1;
@@ -283,7 +283,7 @@ int search_for_books(BookList *lpointer){
 }
 
 int store_books(FILE *file){
-	file=fopen("books.txt","w");
+	file=fopen(bookfile,"w");
 	if (file==NULL){
 		printf("\nFatal error! Book file is missing!\n");
 		return 1;

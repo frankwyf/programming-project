@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "D:\\programming_project\\CWK1\\code\\main.exe",
-            "args": [""],
+            "args": ["books.txt","user.txt","loan.txt"],
             "stopAtEntry": false,
             "cwd": "D:\\programming_project\\CWK1\\code",
             "environment": [],
