@@ -30,7 +30,7 @@ void print_all_books(BookList *lpointer){
 	Book *print;
 	print=lpointer->list->next;
 	while(print!=NULL){
-			printf("%-2i\t%-39s\t%-22s\t%-8i\t%i\n",print->id,print->title,print->authors,print->year,print->copies);//output formates
+			printf("%-2i\t%-39s\t%-22s\t%-8i\t%-8i\n",print->id,print->title,print->authors,print->year,print->copies);//output formates
 		print=print->next;
 	}
 }
