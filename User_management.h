@@ -29,7 +29,7 @@ FILE *userfile;//file pointer for the user(librarian file)
 Librarian *admin;//craet the librarian account
 
 int set_librarian(User *admin,FILE *userfile);//set the librarian account
-int load_userfile(FILE *userfile);//load the fixed user file
+int load_users(FILE *userfile);//load the fixed user file
 void login(FILE *userfile);//the login function
 
 

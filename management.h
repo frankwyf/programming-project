@@ -25,4 +25,13 @@ can be used in return book (updating the loan file), loan management (for the li
 
 int store_loans(FILE *loan);/* the function to rewrite the loan file with the updated loan list*/
 
+/*the funtion is provided for librarians to manage the back end of the system
+it requires to login as the librarian and supports the fuction of mananging the loan information 
+Also, it allows the manager to manage registered users of the system*/
+int backend_management(FILE *userfile);
+
+void print_all_users();//print all the registered users
+void print_all_loans();//print all loan information
+int remove_users();//fuvntion used to remove a user form the userfile
+int remove_loans();//function to remove a loan record,can be used when user return book is mulfunctioning
 #endif

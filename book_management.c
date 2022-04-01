@@ -49,6 +49,10 @@ int load_books(FILE *file){
 		char temp[1024];//read in a whole line form the text file
 		memset(temp, '\0', 1024);//initialize the temp string
 		char *frtn=fgets(temp,sizeof(temp),file);
+		if (frtn==NULL){
+			printf("\nThe loan file is empty! Borrow some book first!\n");
+			return 1;
+		}
 		int i=strlen(temp);
 		temp[i-1]='\0';//delete the '/n' at the end of the line
 		while (frtn != NULL){//read file till the end (an empty line)

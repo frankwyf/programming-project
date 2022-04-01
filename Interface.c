@@ -1,6 +1,7 @@
 #include"interface.h"
 #include"user_management.h"
 #include"book_management.h"
+#include"management.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,7 +51,7 @@ void run_system(){
 	if (load_books(file)==0){
 	int choice = 5; //exit
 	    do {
-	        char * answer = user_input("\nPlease choose an option:\n1) Register an account\n2) Login \n3) Search for books\n4) Display all books\n5) Quit\nOption: ");
+	        char * answer = user_input("\nPlease choose an option:\n1) Register an account\n2) Login for books \n3) Manager system\n4) Display all books\n5) Quit\nOption: ");
 	        choice = atoi(answer);
 	        free(answer);
 		    switch (choice) {
@@ -61,7 +62,7 @@ void run_system(){
 			        login(userfile);
 			        break;
 			    case 3:
-			        search_for_books(lpointer);
+			        backend_management(userfile);
 			        break;
 			    case 4:
 			        print_all_books(lpointer);

@@ -33,6 +33,10 @@ int load_users(FILE *userfile){
         char tem[1024];//read in a whole line form the text file
 	    memset(tem, '\0', 1024);//initialize the temp string
 	    char *pt=fgets(tem,sizeof(tem),userfile);
+		if (pt==NULL){
+			printf("\nThe loan file is empty! Borrow some book first!\n");
+			return 1;
+		}
 	    int i=strlen(tem);
 		tem[i-1]='\0';
 	    //delete the '/n' at the end of the line 
@@ -466,7 +470,7 @@ int remove_book(Book book){
 			int track;//to track whetehr all the booklist has been modified correctly
 			track=p1->id;
 			while (track<lpointer->length){
-				p->id=p->id-1;//o move forward the book id after the deleted node by 1
+				p->id=p->id-1;//to move forward the book id after the deleted node by 1
 				p=p->next;
 				track+=1;
 			}
@@ -477,67 +481,72 @@ int remove_book(Book book){
 
 //fucntion for user register
 int user_regist(FILE *userfile){
-	load_users(userfile);//reload the userfile in case anychages have been made 
-	//get user's name
-    printf("Please enter your name(no numbers):");
-	char *name=(char *)malloc(sizeof(char)*50);//the maxium length of a name maybe is 50 letters
-	fgets(name,50,stdin);
-	int i=strlen(name);
-	name[i-1]='\0';//get rid of the '\n' at the last of the input
-	int j;
-	for (j=0;j<i-1;j++){
-		if (isdigit(name[j])){
+	if (load_users(userfile)==0){//reload the userfile in case anychages have been made 
+        //get user's name
+        printf("Please enter your name(no numbers,less than 50 words):");
+	    char *name=(char *)malloc(sizeof(char)*50);//the maxium length of a name maybe is 50 letters
+	    fgets(name,50,stdin);
+	    int i=strlen(name);
+	    name[i-1]='\0';//get rid of the '\n' at the last of the input
+	    int j;
+	    for (j=0;j<i-1;j++){
+		    if (isdigit(name[j])){
 			printf("\nThis is an invalid name!\n");
 			return 1;
-		}
-		else{continue;}
-	}//name should not contian any numbers
+		    }
+		    else{continue;}
+	    }//name should not contian any numbers
 
-    //get username
-	printf("Please enter your username: ");
-	char *username=(char *)malloc(sizeof(char)*100);//the maxium length of a username maybe is 100 characters
-	fgets(username,100,stdin);
-	int m=strlen(username);
-	username[m-1]='\0';//get rid of the '\n' at the last of the input
+        //get username
+	    printf("Please enter your username(less than 100 characters): ");
+	    char *username=(char *)malloc(sizeof(char)*100);//the maxium length of a username maybe is 100 characters
+	    fgets(username,100,stdin);
+	    int m=strlen(username);
+	    username[m-1]='\0';//get rid of the '\n' at the last of the input
 	
-	//get password
-	printf("Please enter your password(no more than 10 letters or 10 intergers): ");
-	char *password=(char *)malloc(sizeof(char)*10+sizeof(int)*10);//the maxium length of a username maybe is 100 characters
-	fgets(password,50,stdin);
-	int k=strlen(password);
-	password[k-1]='\0';//get rid of the '\n' at the last of the input
+	   //get password
+	   printf("Please enter your password(no more than 10 letters or 10 intergers): ");
+	   char *password=(char *)malloc(sizeof(char)*10+sizeof(int)*10);//the maxium length of a username maybe is 100 characters
+	   fgets(password,50,stdin);
+	   int k=strlen(password);
+	   password[k-1]='\0';//get rid of the '\n' at the last of the input
 
-	int newid=admin->users+1;//set the new user ID
+	   int newid=admin->users+1;//set the new user ID
 
-	//write in the new user's information to user.txt
-	userfile=fopen(Userfile,"a");
-	if (userfile==NULL){
-		printf("\nFail to open user file. Contact the librarian.\n");
-		fclose(userfile);
-		return 1;
+	   	//write in the new user's information to user.txt
+	    userfile=fopen(Userfile,"a");
+	    if (userfile==NULL){
+		    printf("\nFail to open user file. Contact the librarian.\n");
+		    fclose(userfile);
+		    return 1;
+	    }
+	    else{
+		    fprintf(userfile,"%i,%s,%s,%s\n",newid,name,username,password);
+		    fclose(userfile);
+		    free(name);
+		    free(username);
+		    free(password);
+		    printf("\nYou have registered successfully!\n");
+		    printf("\nChoose option 2 if you want to login right after.\n");
+		    return 0;
+	    }    
 	}
 	else{
-		fprintf(userfile,"%i,%s,%s,%s\n",newid,name,username,password);
-		fclose(userfile);
-		free(name);
-		free(username);
-		free(password);
-		printf("\nYou have registered successfully!\n");
-		printf("\nChoose option 2 if you want to login right after.\n");
-		return 0;
+		printf("\nFailed to load user file!\n");
+		return 1;
 	}
 }
 
 void login(FILE *userfile){
     if (load_users(userfile)==0){
-        printf("Please enter username: ");
-        char *username=(char *)malloc(sizeof(char)*50);//the maxium length of a username maybe 50 characters
-	    fgets(username,200,stdin);
+        printf("Please enter username(less than 100 characters): ");
+        char *username=(char *)malloc(sizeof(char)*100);//the maxium length of a username maybe 50 characters
+	    fgets(username,100,stdin);
 	    int i=strlen(username);
 	    username[i-1]='\0';//get rid of the '\n' at the last of the input
-        printf("Please enter password: ");
-        char *password=(char *)malloc(sizeof(char)*30);//the maxium length of a password maybe 30 characters
-	    fgets(password,200,stdin);
+        printf("Please enter password(no more than 10 letters or 10 intergers): ");
+        char *password=(char *)malloc(sizeof(char)*10+sizeof(int)*10);//the maxium length of a password maybe 30 characters
+	    fgets(password,50,stdin);
 	    int j=strlen(password);
 	    password[j-1]='\0';//get rid of the '\n' at the last of the input
 
@@ -605,7 +614,7 @@ void login(FILE *userfile){
 			                break;
 		                case 5:
 			                printf("\nThank you for managing the library!\nLoging you out...\n\n");
-			                return;
+			                break;
 		                default:
 			                printf("\nSorry, the option you entered was invalid, please try agian.\n");
 	                } 

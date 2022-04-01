@@ -1,7 +1,7 @@
-#include"interface.h"
-#include"user_management.h"
-#include"book_management.h"
-#include"management.h"
+#include "interface.h"
+#include "user_management.h"
+#include "book_management.h"
+#include "management.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,6 +37,10 @@ int load_all_loans(FILE *loan){
 		char temp[1024];//read in a whole line form the text file
 		memset(temp, '\0', 1024);//initialize the temp string
 		char *frtn=fgets(temp,sizeof(temp),loan);
+		if (frtn==NULL){
+			printf("\nThe loan file is empty! Borrow some book first!\n");
+			return 1;
+		}
 		int i=strlen(temp);
 		temp[i-1]='\0';//delete the '/n' at the end of the line
 		while (frtn != NULL){//read file till the end (an empty line)
@@ -111,5 +115,164 @@ int store_loans(FILE *loan){
 	    }
         fclose(loan);
 		return 0;//showing success of store books
+	}
+}
+
+//the function that read in the whole list of users and display them
+void print_all_users(){
+	printf("The first user is yourself(the librarian).\n");
+	printf("UserID");
+	printf("%*s",10," ");
+	printf("Name");
+	printf("%*s",20," ");
+	printf("Username");
+	printf("%*s",16," ");
+	printf("Password\n");
+	User *printall;
+	printall=admin->UserList->next->next;
+	while(printall!=NULL){
+		printf("%-8i\t%-22s\t%-22s\t%-20s\n",printall->id,printall->name,printall->username,printall->password);//output formates
+		printall=printall->next;
+	}
+}
+
+void print_all_loans(){
+	if (load_all_loans(loan)==0){
+		printf("UserID");
+	    printf("%*s",10," ");
+	    printf("BookID");
+	    printf("%*s",10," ");
+	    printf("Title");
+	    printf("%*s",19," ");
+	    printf("Author");
+	    printf("%*s",18," ");
+	    printf("Year");
+ 	    printf("%*s",12," ");
+	    printf("Copies\n");
+	    Loan *all_loan;
+	    all_loan=all->loanlist->next;
+	    while(all_loan!=NULL){
+		    printf("%-8i\t%-8i\t%-22s\t%-20s\t%-8i\t%-8i\n",all_loan->user,all_loan->bookid,all_loan->title,all_loan->authors,all_loan->year,all_loan->copies);//output formates
+		    all_loan=all_loan->next;
+	    }
+	}
+	else{
+		printf("\nNo loan information found!\n");
+		return;
+	}
+}
+//function used to write the new user list into userfile
+int store_users(FILE *loan){
+	loan=fopen(Userfile,"w");
+	if (loan==NULL){
+		printf("\nFatal error! Book file is missing!\n");
+		return 1;
+	}
+	else{
+		User *store,*final;
+	    final=admin->UserList;
+	    Createuser(store);
+	    store=final->next;
+	    int user_long=0;
+	    while (user_long<admin->users){
+		    fprintf(file,"%i,%s,%s,%s\n",store->id,store->name,store->username,store->password);
+		    final=store;
+		    store=store->next;
+		    user_long+=1;
+	    }
+		fclose(loan);
+		return 0;//showing success of store books
+	}
+}
+
+//fuvntion used to remove a user form the userfile
+int remove_users(){
+	printf("Enter the id of the user you want to remove: ");
+	char *remove_user=(char *)malloc(sizeof(int)*10+sizeof(char));//the maxium length of a id maybe 10 digits + one for the '\n'
+	fgets(remove_user,51,stdin);
+	int a=strlen(remove_user);
+	remove_user[a-1]='\0';//get rid of the '\n' at the last of the input
+	int b;
+	for (b=0;b<a-1;b++){
+		if (!isdigit(remove_user[b])){
+			printf("\nThis is an invalid book id!\n");
+			return 1;
+		}
+		else{continue;}
+	}
+	int user=atoi(remove_user);
+	//remove the user from the user list
+	User *removeuser,*ending;
+	removeuser=admin->UserList;
+	while (removeuser->next!=NULL){
+		ending=removeuser;
+		removeuser=removeuser->next;
+		if (user==removeuser->id){
+			ending->next=removeuser->next;
+			free(removeuser);
+			removeuser=ending->next;
+			printf("\nUser(ID): %i has been removed.\n",user);
+			admin->users=admin->users-1;//reduce the loan 
+			//rewrite the userfile
+			store_users(loan);
+			return 0;
+		}
+	}
+}
+
+//function to remove a loan record,can be used when user return book is mulfunctioning
+int remove_loans(){
+
+}
+
+int backend_management(FILE *userfile){
+	if (load_users(userfile)==0){//load in the user file to check whether it is the librarian or not
+	    printf("\nWelcome to the backend system!\n\nPlease login as the librarian.\n");
+		printf("Please enter username(less than 100 characters): ");
+        char *username=(char *)malloc(sizeof(char)*100);//the maxium length of a username maybe 50 characters
+	    fgets(username,100,stdin);
+	    int i=strlen(username);
+	    username[i-1]='\0';//get rid of the '\n' at the last of the input
+        printf("Please enter password(no more than 10 letters or 10 intergers): ");
+        char *password=(char *)malloc(sizeof(char)*30);//the maxium length of a password maybe 30 characters
+	    fgets(password,50,stdin);
+	    int j=strlen(password);
+	    password[j-1]='\0';//get rid of the '\n' at the last of the input
+
+		User *administor;//serve as a check for user login, also aused as the identity of the user in user system
+        administor=admin->UserList->next;
+		if (strcmp(administor->username,username)==0 && strcmp(administor->password,password)==0 && administor->id==1){//librarian log in
+				printf("\n(Successfully logged in as Librarian: %s)\n",administor->username);
+				//interface for librarian usage
+                int bchoice = 5; //exit
+	            do {
+	                char * answer = user_input("\nPlease choose an option:\n1) Show all registered users \n2) Remove users \n3) Display all loans \n4) Remove a user\n5) Quit\nOption: ");
+	                bchoice = atoi(answer);
+	                free(answer);
+		            switch (bchoice) {
+		                case 1:
+			                print_all_users();
+			                break;
+			            case 2:
+			                remove_users();
+			                break;
+			            case 3:
+			                print_all_loans();
+			                break;
+			            case 4:
+			                remove_loans();
+			                break;
+						case 5:
+			                printf("\nThank you Manager: %s!\nLoging you out...\n\n",administor->username);
+			                break;
+		                default:
+			                printf("\nSorry, the option you entered was invalid, please try agian.\n");
+	                } 
+                } while (bchoice != 5);
+		    }
+            else{
+			    printf("\nInvalid librarian!\n");
+				return 1;
+		    }
 	}
 }
