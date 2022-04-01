@@ -34,7 +34,7 @@ int load_users(FILE *userfile){
 	    memset(tem, '\0', 1024);//initialize the temp string
 	    char *pt=fgets(tem,sizeof(tem),userfile);
 		if (pt==NULL){
-			printf("\nThe loan file is empty! Borrow some book first!\n");
+			printf("\nThe user file is empty! Register an account first!\n");
 			return 1;
 		}
 	    int i=strlen(tem);

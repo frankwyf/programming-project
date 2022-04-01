@@ -175,7 +175,7 @@ int store_users(FILE *loan){
 	    store=final->next;
 	    int user_long=0;
 	    while (user_long<admin->users){
-		    fprintf(file,"%i,%s,%s,%s\n",store->id,store->name,store->username,store->password);
+		    fprintf(loan,"%i,%s,%s,%s\n",store->id,store->name,store->username,store->password);
 		    final=store;
 		    store=store->next;
 		    user_long+=1;
@@ -195,7 +195,7 @@ int remove_users(){
 	int b;
 	for (b=0;b<a-1;b++){
 		if (!isdigit(remove_user[b])){
-			printf("\nThis is an invalid book id!\n");
+			printf("\nThis is an invalid user id!\n");
 			return 1;
 		}
 		else{continue;}
@@ -212,6 +212,7 @@ int remove_users(){
 			free(removeuser);
 			removeuser=ending->next;
 			printf("\nUser(ID): %i has been removed.\n",user);
+			free(remove_user);
 			admin->users=admin->users-1;//reduce the loan 
 			//rewrite the userfile
 			store_users(loan);
@@ -222,7 +223,60 @@ int remove_users(){
 
 //function to remove a loan record,can be used when user return book is mulfunctioning
 int remove_loans(){
-
+	if (load_all_loans(loan)==0){
+		printf("Enter the id of the user: ");
+	    char *remove_loan=(char *)malloc(sizeof(int)*10+sizeof(char));//the maxium length of a id maybe 10 digits + one for the '\n'
+	    fgets(remove_loan,51,stdin);
+	    int a=strlen(remove_loan);
+	    remove_loan[a-1]='\0';//get rid of the '\n' at the last of the input
+	    int b;
+	    for (b=0;b<a-1;b++){
+		    if (!isdigit(remove_loan[b])){
+			    printf("\nThis is an invalid user id!\n");
+			    return 1;
+		    }
+		    else{continue;}
+	    }
+		int ruserid=atoi(remove_loan);
+		//get the id of the book (since a user may have multiple loans)
+		printf("Enter the id of the book: ");
+	    char *remove_id=(char *)malloc(sizeof(int)*10+sizeof(char));//the maxium length of a id maybe 10 digits + one for the '\n'
+	    fgets(remove_id,51,stdin);
+	    int x=strlen(remove_id);
+	    remove_id[x-1]='\0';//get rid of the '\n' at the last of the input
+	    int y;
+	    for (y=0;y<x-1;y++){
+		    if (!isdigit(remove_id[y])){
+			    printf("\nThis is an invalid user id!\n");
+			    return 1;
+		    }
+		    else{continue;}
+	    }
+		int rbookid=atoi(remove_id);
+		//remove the loan from the loan list
+	    Loan *remove,*ending;
+	    remove=all->loanlist;
+	    while (remove->next!=NULL){
+		    ending=remove;
+		    remove=remove->next;
+		    if (ruserid==remove->user && rbookid==remove->bookid){
+			    ending->next=remove->next;
+			    free(remove);
+			    remove=ending->next;
+			    printf("\nLoan reocrd user(ID): %i  book(ID):%i has been removed.\n",ruserid,rbookid);
+			    free(remove_id);
+				free(remove_loan);
+			    all->total=all->total-1;//reduce the loan 
+			    //rewrite the userfile
+			    store_loans(loan);
+			    return 0;
+		    }
+	    }
+	}
+	else{
+		printf("Failed to laod loan infromation.\n");\
+		return 1;
+	}
 }
 
 int backend_management(FILE *userfile){
@@ -246,7 +300,7 @@ int backend_management(FILE *userfile){
 				//interface for librarian usage
                 int bchoice = 5; //exit
 	            do {
-	                char * answer = user_input("\nPlease choose an option:\n1) Show all registered users \n2) Remove users \n3) Display all loans \n4) Remove a user\n5) Quit\nOption: ");
+	                char * answer = user_input("\nPlease choose an option:\n1) Show all registered users \n2) Remove users \n3) Display all loans \n4) Remove loans\n5) Quit\nOption: ");
 	                bchoice = atoi(answer);
 	                free(answer);
 		            switch (bchoice) {

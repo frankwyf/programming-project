@@ -50,7 +50,7 @@ int load_books(FILE *file){
 		memset(temp, '\0', 1024);//initialize the temp string
 		char *frtn=fgets(temp,sizeof(temp),file);
 		if (frtn==NULL){
-			printf("\nThe loan file is empty! Borrow some book first!\n");
+			printf("\nThe Library is empty! Contact librarian to add some books!\n");
 			return 1;
 		}
 		int i=strlen(temp);
