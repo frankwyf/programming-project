@@ -113,6 +113,7 @@ int load_loan(FILE *userfile,User *returnuser){
 		//skip this empty line since it doesn't has any meaning
 		int i=strlen(try);
 		try[i-1]='\0';//delete the '/n' at the end of the line
+		returnuser->borrowed->length=0;//set the length to 0 everytime reads in from the fucntion
 		while (f != NULL){//read file till the end (an empty line)
 		    CreateNode(p);//create the first real node
 			char *t=strtok(try,",");//cut the input string by comma
@@ -195,13 +196,16 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 		load_loan(userfile,borrowuser);
 		Book *repeat;
 		repeat=borrowuser->borrowed->list;
-		while (repeat!=NULL){
+		int step=0;
+		while (step<borrowuser->borrowed->length){
 			if (repeat->id==borrow_id){
 				printf("\nSorry! It seems that you have borrowed a copy of : %i,%s !\n",repeat->id,repeat->title);
+				step+=1;
 				return 1;
 			}
 			else{
 				repeat=repeat->next;
+				step+=1;
 			}
 		}
 		
@@ -629,7 +633,7 @@ void login(FILE *userfile){
 			                break;
 		                case 5:
 			                printf("\nThank you for managing the library!\nLoging you out...\n\n");
-			                break;
+			                return;
 		                default:
 			                printf("\nSorry, the option you entered was invalid, please try agian.\n");
 	                } 
