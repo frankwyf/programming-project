@@ -504,16 +504,31 @@ int user_regist(FILE *userfile){
 	    int m=strlen(username);
 	    username[m-1]='\0';//get rid of the '\n' at the last of the input
 	
-	   //get password
-	   printf("Please enter your password(no more than 10 letters or 10 intergers): ");
-	   char *password=(char *)malloc(sizeof(char)*10+sizeof(int)*10);//the maxium length of a username maybe is 100 characters
-	   fgets(password,50,stdin);
-	   int k=strlen(password);
-	   password[k-1]='\0';//get rid of the '\n' at the last of the input
+	    //get password
+	    printf("Please enter your password(no more than 10 letters or 10 intergers): ");
+	    char *password=(char *)malloc(sizeof(char)*10+sizeof(int)*10);//the maxium length of a username maybe is 100 characters
+	    fgets(password,50,stdin);
+	    int k=strlen(password);
+	    password[k-1]='\0';//get rid of the '\n' at the last of the input
 
-	   int newid=admin->users+1;//set the new user ID
+	    int newid=admin->users+1;//set the new user ID
 
-	   	//write in the new user's information to user.txt
+	    //check whether there exists a same user or not
+	    User *checkrepeat;
+		checkrepeat=admin->UserList->next;
+		while (checkrepeat!=NULL){
+			if (strcmp(checkrepeat->username,username)==0){
+				printf("\nThe username has been taken!\n");
+				return 1;
+			}
+			if (strcmp(checkrepeat->password,password)==0){
+				printf("\nThe password has been taken!\n");
+				return 1;
+			}
+			checkrepeat=checkrepeat->next;
+		}
+		
+	    //write in the new user's information to user.txt
 	    userfile=fopen(Userfile,"a");
 	    if (userfile==NULL){
 		    printf("\nFail to open user file. Contact the librarian.\n");
