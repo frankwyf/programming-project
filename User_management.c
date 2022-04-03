@@ -197,7 +197,7 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 		Book *repeat;
 		repeat=borrowuser->borrowed->list;
 		int step=0;
-		while (step<borrowuser->borrowed->length){
+		while (step<=borrowuser->borrowed->length){
 			if (repeat->id==borrow_id){
 				printf("\nSorry! It seems that you have borrowed a copy of : %i,%s !\n",repeat->id,repeat->title);
 				step+=1;
@@ -207,13 +207,6 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 				repeat=repeat->next;
 				step+=1;
 			}
-		}
-		
-		if (borrowuser->borrowed->list->id)
-		//need to check form the loan file
-		if (borrowuser->borrowed->list->id==borrow_id){
-			printf("\nSorry, you already have a copy of this book on loan!\n");
-			return 1;
 		}
 	    int loop=0;//for loop around the whole list
 		Book *p,*end;
