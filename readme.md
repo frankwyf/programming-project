@@ -3,6 +3,7 @@
 ## This is the README file of XJCO1921 programming-project coursework 1, the systme provided user register, user (librarian) login, print all books and a backend management system(addtional)
 *[Functions and inplemeantations](#General-interpretation)
 *[Tests and file explaination](#Tests-and-submission-files)
+*[Reflection](#Reflection-and-review)
 
 ### General-interpretation
 The entrance is pleaced in a file called "main.c", in the main function the system takes in command line arguments and these three arguments are corresponding to book file, user file and loan file.
@@ -21,6 +22,11 @@ Option 5 is to quit the whole system, when all the book information is updated a
 
 ### Tests-and-submission-files
 The systme is tested uder windows and centOS(linux) virtual machine. The Functions can be used properly and a relevant amount of error siutuations are considered and dealt with. However, I found that due to the different ways of storing a .txt file, under linux OS, all the three files(book file user file, loan file) requires a "dos2unix" command to be restored in unix coding so that the fucntions can be presented properly. In my subbmited files, there is a folder called "linux_file" which contains three unix coding .txt files for showing the system under linux OS.
+
+### Reflection-and-review
+In this project, the major problem I encountered was how to use dynamic memory allocation for all aspects that require internal memory spaces. The other part, like how to read/write form a text file, manage user input and look up through linked lists all went relatively well. For testing, I encountered some problem when moving my system under a unix operating system but the problem was solved by re-saving text files as unix mode. A copy of those files is included in the submission, too.
+
+The most challenging part is dynamic memory allocation and flexibility between operating systems. As a beginner, I am still not very familliar with dynamic memory allocation and the minor differences between different operating systems. I will practice more and learn from all my previous works to improve on these two points.
 
 ### Git with a Git Hub repository was used for verison control in this work, the URL of the remote repository and screenshots of gits commision is presented below 
 URL of git respository:https://github.com/frankwyf/programming-project.git
