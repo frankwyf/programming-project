@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
+
 
 #define CreateNode(p) p=(Book *)malloc(sizeof(Book));
 #define Booklist(p) p=(BookList *)malloc(sizeof(BookList));
@@ -279,6 +281,12 @@ int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
 	    }
 	    int return_id=(int)atoi(str);//read in the ID for borrow operations
 
+        //make sure the id is in range
+		if (return_id>lpointer->length || return_id<1){
+		    printf("\nID out of range! Please re-enter.\n");
+		    return 1;
+	    }
+
 		/*return operation is presented below
         "return" the book to the library by adding the copies by 1
 		delete the loan record in the loan file
@@ -382,22 +390,31 @@ int add_book(Book book){
 		else{continue;}
 	}
 	int addyear=atoi(add_year);
+	time_t t;
+    struct tm * lt;
+    time (&t);//get Unix time
+    lt = localtime (&t);//trun into time struct
+    int thisyear=lt->tm_year+1900;
+	if (addyear>thisyear){
+		printf("\nThis year is %i! No futher year is possible!\n",thisyear);
+		return 1;
+	}
 	book.year=addyear;
 
 	//add the copies of the book
-	printf("Enter the copies of the book you want to add: ");
-	char *add_copies=(char *)malloc(sizeof(int)*4+sizeof(char));//the maxium length of a year is 4 digit + one for the '\n'
+	printf("Enter the copies of the book you want to add(no more than): ");
+	char *add_copies=(char *)malloc(sizeof(int)*4+sizeof(char));//the maxium length of a copy is 4 digit + one for the '\n'
 	fgets(add_copies,18,stdin);
 	int a=strlen(add_copies);
-	if (a>5){//the lenght of a year can be maximum at 4 digits (and one '\n')
-		printf("\nThis is an invalid year!\n");
+	if (a>5){//no negative copy numbers
+		printf("\nToo much copies!\n");
 		return 1;
 	}
 	add_copies[a-1]='\0';//get rid of the '\n' at the last of the input
 	int b;
 	for (b=0;b<a-1;b++){
 		if (!isdigit(add_copies[b])){
-			printf("\nThis is an invalid year!\n");
+			printf("\nThis is an invalid copy number!\n");
 			return 1;
 		}
 		else{continue;}
@@ -407,7 +424,7 @@ int add_book(Book book){
 
 	//book id is the last one
 	book.id=lpointer->length+1;
-
+    
 	//create a node to store the value 
 	Book *add,*temp;
 	CreateNode(add);
@@ -417,6 +434,21 @@ int add_book(Book book){
 	add->title=book.title;
 	add->year=book.year;
 	add->copies=book.copies;
+	//test if there is a repeated book in the library
+	Book *redundant;
+	redundant=lpointer->list->next;
+	int length=0;
+	while (length<lpointer->length){
+		if (strcmp(redundant->authors,add->authors)==0 && strcmp(redundant->title,add->title)==0 && redundant->year==add->year){
+			printf("\nThe book is already in the library!\nAdding copies to the exsisting book in library...\n");
+			redundant->copies=redundant->copies+book.copies;
+			return 1;
+		}
+		else{
+			redundant=redundant->next;
+			length+=1;
+		}
+	}
 	//add to the book list (at last)
 	temp=lpointer->list;
 	while (temp->next!=NULL){
@@ -449,6 +481,11 @@ int remove_book(Book book){
 		else{continue;}
 	}
 	int removeid=atoi(remove_id);
+	//check th id is in range or not
+	if (removeid>lpointer->length || removeid<1){
+		printf("\nID out of range! Please re-enter.\n");
+		return 1;
+	}
 	book.id=removeid;
 
 	//deleted the specified node in the book list

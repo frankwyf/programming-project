@@ -201,6 +201,10 @@ int remove_users(){
 		else{continue;}
 	}
 	int user=atoi(remove_user);
+	if (user>admin->users || user<2){//can't remove the librarian
+		printf("\nID out of range! Please re-enter.\n");
+		return 1;
+	}
 	//remove the user from the user list
 	User *removeuser,*ending;
 	removeuser=admin->UserList;
@@ -238,6 +242,10 @@ int remove_loans(){
 		    else{continue;}
 	    }
 		int ruserid=atoi(remove_loan);
+		if (ruserid>admin->users || ruserid<2){//librarian can't borrow a book
+		    printf("\nUser ID out of range! Please re-enter.\n");
+		    return 1;
+	    }
 		//get the id of the book (since a user may have multiple loans)
 		printf("Enter the id of the book: ");
 	    char *remove_id=(char *)malloc(sizeof(int)*10+sizeof(char));//the maxium length of a id maybe 10 digits + one for the '\n'
@@ -253,6 +261,10 @@ int remove_loans(){
 		    else{continue;}
 	    }
 		int rbookid=atoi(remove_id);
+		if (rbookid>lpointer->length || rbookid<2){//librarian can't borrow a book
+		    printf("\nBook ID out of range! Please re-enter.\n");
+		    return 1;
+	    }
 		//remove the loan from the loan list
 	    Loan *remove,*ending;
 	    remove=all->loanlist;

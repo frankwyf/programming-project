@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 
 #define CreateNode(p) p=(Book *)malloc(sizeof(Book));
@@ -55,16 +56,38 @@ int load_books(FILE *file){
 		}
 		int i=strlen(temp);
 		temp[i-1]='\0';//delete the '/n' at the end of the line
+		int line=1;//show error message if something worng happened
 		while (frtn != NULL){//read file till the end (an empty line)
 		    CreateNode(p);//create the first real node
 			char *ptr=strtok(temp,",");//cut the input string by comma
 			int row=0;
+			int len;// the 
+			int index;
 			while (ptr != NULL){
 				switch (row){//copying data into the data part in a node
-					case 0:
+					case 0:   
+						len=strlen(ptr);
+	                    for (index=0;index<len;index++){
+		                    if (!isdigit(ptr[index])){
+			                    printf("\nSome thing worng with the book ID of line %i.\n",line);
+			                    return 1;
+		                    }
+		                    else{continue;}
+	                    }
 					    p->id=atoi(ptr);
 					    break;
 					case 1:
+					    len=strlen(ptr);
+	                    for (index=0;index<len;index++){
+							if (isspace(ptr[index])){
+								printf("%i",index);
+							}
+		                    if (isalpha(ptr[index])){
+			                    printf("\nSome thing worng with the title of line %i.\n",line);
+			                    return 1;
+		                    }
+		                    else{continue;}
+	                    }
 					    p->title=ptr;
 						int i;
 						i=strlen(p->title);
@@ -72,6 +95,15 @@ int load_books(FILE *file){
 						strcpy(p->title,ptr);
 					    break;
 					case 2:
+					    len=strlen(ptr);
+	                    for (index=0;index<len;index++){
+							
+		                    if (isdigit(ptr[index])){
+			                    printf("\nSome thing worng with the author of line %i.\n",line);
+			                    return 1;
+		                    }
+		                    else{continue;}
+	                    }
 					    p->authors=ptr;
 						int j;
 						j=strlen(p->authors);
@@ -79,9 +111,25 @@ int load_books(FILE *file){
 						strcpy(p->authors,ptr);
 					    break;
 					case 3:
+					    len=strlen(ptr);
+	                    for (index=0;index<len;index++){
+		                    if (!isdigit(ptr[index])){
+			                    printf("\nSome thing worng with the year of line %i.\n",line);
+			                    return 1;
+		                    }
+		                    else{continue;}
+	                    }
 					    p->year=atoi(ptr);
 					    break;
 					case 4:
+					    len=strlen(ptr);
+	                    for (index=0;index<len;index++){
+		                    if (!isdigit(ptr[index])){
+			                    printf("\nSome thing worng with the copy number of line %i.\n",line);
+			                    return 1;
+		                    }
+		                    else{continue;}
+	                    }
 					    p->copies=atoi(ptr);
 					    break;
 				}
@@ -90,7 +138,8 @@ int load_books(FILE *file){
 			}
 			p->next=NULL;
 			last->next=p;
-			last=p;//iserting a new node into the linked list
+			last=p;//inserting a new node into the linked list
+			line+=1;//read in the next line
 		    memset(temp, '\0', 1024);
             frtn = fgets(temp,sizeof(temp),file);//read in the second line
 		    int j=strlen(temp);
@@ -222,8 +271,14 @@ BookList find_book_by_year (unsigned int year){
 		else{continue;}
 	}
 	year=(int)atoi(str);//give the attributes
-	if (year>2022){
-		printf("\nThis year is 2022! No futher year is possible!\n");
+	//get the current year and no further year is possible
+	time_t t;
+    struct tm * lt;
+    time (&t);//get Unix time
+    lt = localtime (&t);//trun into time struct
+    int thisyear=lt->tm_year+1900;
+	if (year>thisyear){
+		printf("\nThis year is %i! No futher year is possible!\n",thisyear);
 		find_book_by_year->list=NULL;
 		return *find_book_by_year;
 	}
