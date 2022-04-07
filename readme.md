@@ -12,6 +12,7 @@ In the main interface, there are five functions.
 Option 1 corresponds to user register, in which a user will have to provide a name, a username and a password to register in the system. Their information are stored in the user file and pointers are used to get user inupt.
 
 Option 2 corresponds to login. The system has a special user (ID as 1) called "deafult", the username is "Admin" and password is "Admin123". This is the librarian account. Login as the librarian allows you to add, remove, serach or print all the books. Following the librarian are all the registered users and login as a user allows you to borrow, return, search or print all the books. All the functions above is provided in a sub-interface when the check of username and password is passed.
+When log in and system starts, the current time is displayed on the screen.
 
 *Option 3 is an additioanl feature which is not within the requirement of coursework 1. I designed it as a enmergency solution to some unexpeted situations. The backend system ONLY allows the librarian to login and it provides the librarian (manager) with functions of showing all registered users; remove a user as he/she's information or membership is expired; display all the loan information and remove a loan record when a user lost a copy of books or something worog happend when the book is returned.
 
@@ -23,6 +24,7 @@ Option 5 is to quit the whole system, when all the book information is updated a
 ### Tests-and-submission-files
 The systme is tested uder windows and centOS(linux) virtual machine. The Functions can be used properly and a relevant amount of error siutuations are considered and dealt with. However, I found that due to the different ways of storing a .txt file, under linux OS, all the three files(book file user file, loan file) requires a "dos2unix" command to be restored in unix coding so that the fucntions can be presented properly. In my subbmited files, there is a folder called "linux_file" which contains three unix coding .txt files for showing the system under linux OS.
 During test period, I found that the up limit of a "year" value should be no more than the current year. In order to do so, I used the C libraray "time.h" to get the current system time and limit user input by this.
+Besieds, to make sure that the right data type is read in to the system, every "loan" functions have a check for the type if data which are fed to the system. If they are of the wrong type, the system will return with a meaningful error message.
 
 ### Reflection-and-review
 In this project, the major problem I encountered was how to use dynamic memory allocation for all aspects that require internal memory spaces. The other part, like how to read/write form a text file, manage user input and look up through linked lists all went relatively well. For testing, I encountered some problem when moving my system under a unix operating system but the problem was solved by re-saving text files as unix mode. A copy of those files is included in the submission, too.

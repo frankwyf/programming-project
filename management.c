@@ -43,15 +43,34 @@ int load_all_loans(FILE *loan){
 		}
 		int i=strlen(temp);
 		temp[i-1]='\0';//delete the '/n' at the end of the line
+		int line=1;//show error message if something worng happened
 		while (frtn != NULL){//read file till the end (an empty line)
 		    Createloan(p);//create the first real node
 			char *ptr=strtok(temp,",");//cut the input string by comma
 			int row=0;
+			int len;// the length of a piece of data
+			int index;//the index of the character in the char pointer
 			while (ptr != NULL){
 				switch (row){//copying data into the data part in a node
                     case 0:
+					    len=strlen(ptr);
+	                    for (index=0;index<len;index++){
+		                    if (!isdigit(ptr[index])){
+			                    printf("\nSome thing worng with the user ID of line %i in loan file.\n",line);
+			                    return 1;
+		                    }
+		                    else{continue;}
+	                    }
                         p->user=atoi(ptr);
 					case 1:
+					    len=strlen(ptr);
+	                    for (index=0;index<len;index++){
+		                    if (!isdigit(ptr[index])){
+			                    printf("\nSome thing worng with the book ID of line %i in loan file.\n",line);
+			                    return 1;
+		                    }
+		                    else{continue;}
+	                    }
 					    p->bookid=atoi(ptr);
 					    break;
 					case 2:
@@ -62,6 +81,17 @@ int load_all_loans(FILE *loan){
 						strcpy(p->title,ptr);
 					    break;
 					case 3:
+					    len=strlen(ptr);
+	                    for (index=0;index<len;index++){
+		                    if (isspace(ptr[index])){
+								index+=1;//ignore the space in title
+							}
+		                    if (!isalpha(ptr[index])){
+			                    printf("\nSome thing worng with the author of line %i in loan file.\n",line);
+			                    return 1;
+		                    }
+		                    else{continue;}
+	                    }
 					    p->authors=ptr;
 						int j;
 						j=strlen(p->authors);
@@ -69,9 +99,25 @@ int load_all_loans(FILE *loan){
 						strcpy(p->authors,ptr);
 					    break;
 					case 4:
+					    len=strlen(ptr);
+	                    for (index=0;index<len;index++){
+		                    if (!isdigit(ptr[index])){
+			                    printf("\nSome thing worng with the year of line %i in loan file.\n",line);
+			                    return 1;
+		                    }
+		                    else{continue;}
+	                    }
 					    p->year=atoi(ptr);
 					    break;
 					case 5:
+					    len=strlen(ptr);
+	                    for (index=0;index<len;index++){
+		                    if (!isdigit(ptr[index]) || atoi(ptr)!=1){//every user can only borrow 1 copy of each book
+			                    printf("\nSome thing worng with the copy number of line %i in loan file.\n",line);
+			                    return 1;
+		                    }
+		                    else{continue;}
+	                    }
 					    p->copies=atoi(ptr);
 					    break;
 				}
@@ -82,6 +128,7 @@ int load_all_loans(FILE *loan){
 			p->next=NULL;
 			last->next=p;
 			last=p;//iserting a new node into the linked list
+			line+=1;
 		    memset(temp, '\0', 1024);
             frtn = fgets(temp,sizeof(temp),loan);//read in the second line
 		    int j=strlen(temp);
@@ -157,7 +204,7 @@ void print_all_loans(){
 	    }
 	}
 	else{
-		printf("\nNo loan information found!\n");
+		printf("\nSomething wrong with the loan information!\n");
 		return;
 	}
 }

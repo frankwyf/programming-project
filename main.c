@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 int main(int argc, char **argv){
     if (argc<4){
@@ -22,7 +23,11 @@ int main(int argc, char **argv){
         strcpy(Userfile,argv[2]);
         strcpy(loanfile,argv[3]);
     }
-    printf("Welcome to the librbay system!\n");
+    time_t t;
+    struct tm * lt;
+    time (&t);//get Unix time
+    lt = localtime (&t);//turn into time struct
+	printf("Welcome to the librbay system!\nCurrent time is %d/%d/%d %d:%d:%d\n",lt->tm_year+1900, lt->tm_mon+1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
     run_system();
     return 0;
 }

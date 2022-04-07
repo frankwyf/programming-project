@@ -61,8 +61,8 @@ int load_books(FILE *file){
 		    CreateNode(p);//create the first real node
 			char *ptr=strtok(temp,",");//cut the input string by comma
 			int row=0;
-			int len;// the 
-			int index;
+			int len;// the length of a piece of data
+			int index;//the index of the character in the char pointer
 			while (ptr != NULL){
 				switch (row){//copying data into the data part in a node
 					case 0:   
@@ -77,17 +77,6 @@ int load_books(FILE *file){
 					    p->id=atoi(ptr);
 					    break;
 					case 1:
-					    len=strlen(ptr);
-	                    for (index=0;index<len;index++){
-							if (isspace(ptr[index])){
-								printf("%i",index);
-							}
-		                    if (isalpha(ptr[index])){
-			                    printf("\nSome thing worng with the title of line %i.\n",line);
-			                    return 1;
-		                    }
-		                    else{continue;}
-	                    }
 					    p->title=ptr;
 						int i;
 						i=strlen(p->title);
@@ -97,8 +86,10 @@ int load_books(FILE *file){
 					case 2:
 					    len=strlen(ptr);
 	                    for (index=0;index<len;index++){
-							
-		                    if (isdigit(ptr[index])){
+		                    if (isspace(ptr[index])){
+								index+=1;//ignore the space in title
+							}
+		                    if (!isalpha(ptr[index])){
 			                    printf("\nSome thing worng with the author of line %i.\n",line);
 			                    return 1;
 		                    }
@@ -161,15 +152,6 @@ BookList find_book_by_title (const char *title){
 	int i=strlen(str);
 	str[i-1]='\0';//get rid of the '\n' at the last of the input
 	title=str;
-	int j;
-	for (j=0;j<i-1;j++){
-		if (isdigit(str[j])){
-			printf("\nThis is an invalid book title!\n");
-			find_book_by_title->list=NULL;
-			return *find_book_by_title;
-		}
-		else{continue;}
-	}
     find_book_by_title->list=lpointer->list->next;
 	printf("\n");
     print_title();
@@ -202,7 +184,7 @@ BookList find_book_by_title (const char *title){
 BookList find_book_by_author (const char *author){
 	BookList *find_book_by_author;
 	Booklist(find_book_by_author);
-	printf("\nPlease enter the author: ");
+	printf("\nPlease enter the author(only characters): ");
 	char *str=(char *)malloc(sizeof(char)*100);//the maxium length of a book title maybe 200 characters
 	fgets(str,100,stdin);
 	int i=strlen(str);
@@ -210,7 +192,10 @@ BookList find_book_by_author (const char *author){
 	author=str;//give in the attributes
 	int j;
 	for (j=0;j<i-1;j++){
-		if (isdigit(str[j])){
+		if (isspace(str[j])){
+			j+=1;
+		}
+		if (!isalpha(str[j])){
 			printf("\nThis is an invalid auathor name!\n");
 			find_book_by_author->list=NULL;
 			return *find_book_by_author;

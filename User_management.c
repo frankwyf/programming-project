@@ -40,18 +40,39 @@ int load_users(FILE *userfile){
 			return 1;
 		}
 	    int i=strlen(tem);
-		tem[i-1]='\0';
-	    //delete the '/n' at the end of the line 
+		tem[i-1]='\0';//delete the '/n' at the end of the line
+		int line=1;//show error message if something worng happened
 	    while (pt != NULL){
             Createuser(p);
             char *data=strtok(tem,",");//cut the input string by comma
             int attributes=0;
+			int len;// the length of a piece of data
+		    int index;//the index of the character in the char pointer 
             while (data != NULL){
                switch (attributes){//copying data into the data part in a node
                     case 0:
+					    len=strlen(data);
+	                    for (index=0;index<len;index++){
+		                    if (!isdigit(data[index])){
+			                    printf("\nSome thing worng with the user ID of line %i.\n",line);
+			                    return 1;
+		                    }
+		                    else{continue;}
+	                    }
 					    p->id=atoi(data);
 					    break;
 					case 1:
+					    len=strlen(data);
+	                    for (index=0;index<len;index++){
+		                    if (isspace(data[index])){
+								index+=1;//ignore the space in title
+							}
+		                    if (!isalpha(data[index])){
+			                    printf("\nSome thing worng with the name(user) of line %i.\n",line);
+			                    return 1;
+		                    }
+		                    else{continue;}
+	                    }
 					    p->name=data;
                         int i;
 						i=strlen(p->name);
@@ -79,6 +100,7 @@ int load_users(FILE *userfile){
           	p->next=NULL;
 			last->next=p;
 			last=p;//iserting a new node into the linked list
+			line+=1;//read in the next line
 		    memset(tem, '\0', 1024);
             pt = fgets(tem,sizeof(tem),userfile);//read in the second line
 		    int j=strlen(tem);
@@ -116,6 +138,7 @@ int load_loan(FILE *userfile,User *returnuser){
 		int i=strlen(try);
 		try[i-1]='\0';//delete the '/n' at the end of the line
 		returnuser->borrowed->length=0;//set the length to 0 everytime reads in from the fucntion
+		int line=1;//show error message if something worng happened
 		while (f != NULL){//read file till the end (an empty line)
 		    CreateNode(p);//create the first real node
 			char *t=strtok(try,",");//cut the input string by comma
@@ -126,9 +149,19 @@ int load_loan(FILE *userfile,User *returnuser){
 				returnuser->id=Check_user;//copying the user id to show data structure
 				t=strtok(NULL,",");//read in real data
 				int row=0;
+				int len;// the length of a piece of data
+			    int index;//the index of the character in the char pointer
 			    while (t != NULL){
 				    switch (row){//copying data into the data part in a node
 					    case 0:
+						    len=strlen(t);
+	                        for (index=0;index<len;index++){
+		                        if (!isdigit(t[index])){
+			                        printf("\nSome thing worng with the book ID of line %i in loan file.\n",line);
+			                        return 1;
+		                        }
+		                        else{continue;}
+	                        }
 					        p->id=atoi(t);
 					        break;
 					    case 1:
@@ -139,6 +172,17 @@ int load_loan(FILE *userfile,User *returnuser){
 						    strcpy(p->title,t);
 					        break;
 					    case 2:
+						    len=strlen(t);
+	                        for (index=0;index<len;index++){
+		                        if (isspace(t[index])){
+								    index+=1;//ignore the space in title
+							    }
+		                        if (!isalpha(t[index])){
+			                        printf("\nSome thing worng with the author of line %i in loan file.\n",line);
+			                        return 1;
+		                        }
+		                        else{continue;}
+	                        }
 					        p->authors=t;
 						    int j;
 						    j=strlen(p->authors);
@@ -146,9 +190,25 @@ int load_loan(FILE *userfile,User *returnuser){
 						    strcpy(p->authors,t);
 					        break;
 					    case 3:
+						    len=strlen(t);
+	                        for (index=0;index<len;index++){
+		                        if (!isdigit(t[index])){
+			                        printf("\nSome thing worng with the year of line %i in loan file.\n",line);
+			                        return 1;
+		                        }
+		                        else{continue;}
+	                        }
 					        p->year=atoi(t);
 					        break;
 					    case 4:
+						    len=strlen(t);
+	                        for (index=0;index<len;index++){
+		                        if (!isdigit(t[index])){
+			                        printf("\nSome thing worng with the year of line %i in the loan file.\n",line);
+			                        return 1;
+		                        }
+		                        else{continue;}
+	                        }
 					        p->copies=atoi(t);
 					        break;
 				    }
@@ -363,7 +423,10 @@ int add_book(Book book){
 	add_author[x-1]='\0';//get rid of the '\n' at the last of the input
 	int y;
 	for (y=0;y<x-1;y++){
-		if (isdigit(add_author[y])){
+		if (isspace(add_author[y])){
+			y+=1;
+		}
+		if (!isalpha(add_author[y])){
 			printf("\nThis is an invalid book title!\n");
 			return 1;
 		}
@@ -611,7 +674,11 @@ void login(FILE *userfile){
 	            CreateNode(LoginCheck->borrowed->list);//creat the first node in the booklist struct as the head node of the loan list
 				LoginCheck->borrowed->list->id=0;//initialize the loan list by id
             	LoginCheck->borrowed->length=0;//initialize the length of the booklist
-                printf("\n(Successfully logged in as: %s)\n",LoginCheck->username);
+				time_t t;
+                struct tm * lt;
+                time (&t);//get Unix time
+                lt = localtime (&t);//turn into time struct
+				printf("\n(Successfully logged in as: %s at %d/%d/%d %d:%d:%d\n",LoginCheck->username,lt->tm_year+1900, lt->tm_mon+1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
 				//interface for normal user
                 int choice = 5; //exit
 	            do {
@@ -632,6 +699,9 @@ void login(FILE *userfile){
 			                print_all_books(lpointer);
 			                break;
 		                case 5:
+						    time (&t);//get Unix time
+                            lt = localtime (&t);//turn into time struct
+				            printf("\nRequest to log out at %d/%d/%d %d:%d:%d\n",lt->tm_year+1900, lt->tm_mon+1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
 			                printf("\nThank you for using the library!\n Loging you out...\n\n");
 			                break;
 		                default:
@@ -641,7 +711,11 @@ void login(FILE *userfile){
             }
 		    if (strcmp(LoginCheck->username,username)==0 && strcmp(LoginCheck->password,password)==0 && LoginCheck->id==1){//librarian log in
 			    success=1;
-				printf("\n(Successfully logged in as Librarian: %s)\n",LoginCheck->username);
+				time_t t;
+                struct tm * lt;
+                time (&t);//get Unix time
+                lt = localtime (&t);//turn into time struct
+				printf("\n(Successfully logged in as Librarian: %s at %d/%d/%d %d:%d:%d\n",LoginCheck->username,lt->tm_year+1900, lt->tm_mon+1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
 				//interface for librarian usage
                 int lchoice = 5; //exit
 	            do {
@@ -662,6 +736,9 @@ void login(FILE *userfile){
 			                print_all_books(lpointer);
 			                break;
 		                case 5:
+                            time (&t);//get Unix time
+                            lt = localtime (&t);//turn into time struct
+				            printf("\nRequest to log out at %d/%d/%d %d:%d:%d\n",lt->tm_year+1900, lt->tm_mon+1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
 			                printf("\nThank you for managing the library!\nLoging you out...\n\n");
 			                return;
 		                default:
