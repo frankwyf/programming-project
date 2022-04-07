@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 
 
@@ -355,37 +356,44 @@ int backend_management(FILE *userfile){
 		User *administor;//serve as a check for user login, also aused as the identity of the user in user system
         administor=admin->UserList->next;
 		if (strcmp(administor->username,username)==0 && strcmp(administor->password,password)==0 && administor->id==1){//librarian log in
-				printf("\n(Successfully logged in as Librarian: %s)\n",administor->username);
-				//interface for librarian usage
-                int bchoice = 5; //exit
-	            do {
-	                char * answer = user_input("\nPlease choose an option:\n1) Show all registered users \n2) Remove users \n3) Display all loans \n4) Remove loans\n5) Quit\nOption: ");
-	                bchoice = atoi(answer);
-	                free(answer);
-		            switch (bchoice) {
-		                case 1:
-			                print_all_users();
-			                break;
-			            case 2:
-			                remove_users();
-			                break;
-			            case 3:
-			                print_all_loans();
-			                break;
-			            case 4:
-			                remove_loans();
-			                break;
-						case 5:
-			                printf("\nThank you Manager: %s!\nLoging you out...\n\n",administor->username);
-			                break;
-		                default:
-			                printf("\nSorry, the option you entered was invalid, please try agian.\n");
-	                } 
-                } while (bchoice != 5);
-		    }
-            else{
-			    printf("\nInvalid librarian!\n");
+		    time_t t;
+            struct tm * lt;
+            time (&t);//get Unix time
+            lt = localtime (&t);//turn into time struct
+			printf("\nSuccessfully logged in as Librarian: %s at %d/%d/%d %d:%d:%d\n",administor->username,lt->tm_year+1900, lt->tm_mon+1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
+			//interface for librarian usage
+            int bchoice = 5; //exit
+	        do {
+	            char * answer = user_input("\nPlease choose an option:\n1) Show all registered users \n2) Remove users \n3) Display all loans \n4) Remove loans\n5) Quit\nOption: ");
+	            bchoice = atoi(answer);
+                free(answer);
+		        switch (bchoice) {
+		            case 1:
+		                print_all_users();
+		                break;
+		            case 2:
+			            remove_users();
+			            break;
+			        case 3:
+			            print_all_loans();
+			            break;
+		            case 4:
+		                remove_loans();
+		                break;
+					case 5:
+					    time (&t);//get Unix time
+                        lt = localtime (&t);//turn into time struct
+				        printf("\nRequest to log out at %d/%d/%d %d:%d:%d\n",lt->tm_year+1900, lt->tm_mon+1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
+			            printf("\nThank you Manager: %s!\nLoging you out...\n\n",administor->username);
+			            break;
+		            default:
+		                printf("\nSorry, the option you entered was invalid, please try agian.\n");
+                } 
+            } while (bchoice != 5);
+		}
+        else{
+		    printf("\nInvalid librarian!\n");
 				return 1;
-		    }
+	    }
 	}
 }

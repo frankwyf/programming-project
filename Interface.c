@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 #define CreateNode(p) p=(Book *)malloc(sizeof(Book));
 #define Booklist(p) p=(BookList *)malloc(sizeof(BookList));
@@ -48,6 +49,8 @@ char *user_input(const char *input) {
 }
 
 void run_system(){
+	time_t t;
+    struct tm * lt;
 	if (load_books(file)==0){
 	int choice = 5; //exit
 	    do {
@@ -69,7 +72,9 @@ void run_system(){
 			        break;
 		        case 5:
 				    if (store_books(file)==0){
-						printf("\nThank you for using the library!\nGoodbye!\n\n");
+						time (&t);//get Unix time
+                        lt = localtime (&t);//turn into time struct
+						printf("\nThank you for using the library!\nGoodbye! %d/%d/%d %d:%d:%d\n\n",lt->tm_year+1900, lt->tm_mon+1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
 			            break;
 					}
 					else{

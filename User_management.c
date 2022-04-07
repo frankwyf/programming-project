@@ -580,19 +580,22 @@ int remove_book(Book book){
 int user_regist(FILE *userfile){
 	if (load_users(userfile)==0){//reload the userfile in case anychages have been made 
         //get user's name
-        printf("Please enter your name(no numbers,less than 50 words):");
+        printf("Please enter your name(less than 50 words,only space and characters are allowed):");
 	    char *name=(char *)malloc(sizeof(char)*50);//the maxium length of a name maybe is 50 letters
 	    fgets(name,50,stdin);
 	    int i=strlen(name);
 	    name[i-1]='\0';//get rid of the '\n' at the last of the input
 	    int j;
-	    for (j=0;j<i-1;j++){
-		    if (isdigit(name[j])){
-			printf("\nThis is an invalid name!\n");
-			return 1;
-		    }
-		    else{continue;}
-	    }//name should not contian any numbers
+	    for (j=0;j<i;j++){
+		    if (isspace(name[j])){
+				j+=1;//ignore the space in title
+			}
+		    if (!isalpha(name[j])){
+			    printf("\nSome thing worng with your name!\nOnly space and characters are allowed.\n");
+			    return 1;
+            }
+            else{continue;}
+	    }//name should only contain space and letters
 
         //get username
 	    printf("Please enter your username(less than 100 characters): ");
@@ -678,7 +681,7 @@ void login(FILE *userfile){
                 struct tm * lt;
                 time (&t);//get Unix time
                 lt = localtime (&t);//turn into time struct
-				printf("\n(Successfully logged in as: %s at %d/%d/%d %d:%d:%d\n",LoginCheck->username,lt->tm_year+1900, lt->tm_mon+1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
+				printf("\n(Successfully logged in as: %s at %d/%d/%d %d:%d:%d)\n",LoginCheck->username,lt->tm_year+1900, lt->tm_mon+1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
 				//interface for normal user
                 int choice = 5; //exit
 	            do {
@@ -715,7 +718,7 @@ void login(FILE *userfile){
                 struct tm * lt;
                 time (&t);//get Unix time
                 lt = localtime (&t);//turn into time struct
-				printf("\n(Successfully logged in as Librarian: %s at %d/%d/%d %d:%d:%d\n",LoginCheck->username,lt->tm_year+1900, lt->tm_mon+1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
+				printf("\n(Successfully logged in as Librarian: %s at %d/%d/%d %d:%d:%d)\n",LoginCheck->username,lt->tm_year+1900, lt->tm_mon+1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
 				//interface for librarian usage
                 int lchoice = 5; //exit
 	            do {
